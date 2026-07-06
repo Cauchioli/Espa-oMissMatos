@@ -1,0 +1,3222 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vértice — Gestão de Conteúdo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══ TOKENS ══ */
+:root {
+  --gold: #B89047;
+  --gold-light: #D4A853;
+  --gold-dim: #8A6B33;
+  --tofu: #3B82F6;
+  --mofu: #8B5CF6;
+  --bofu: #10B981;
+  --red: #EF4444;
+  --amber: #F59E0B;
+  --indigo: #6366F1;
+  --pink: #EC4899;
+  --teal: #14B8A6;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-card2: #F8FAFC;
+  --bg-sidebar: #FFFFFF;
+  --text: #1E293B;
+  --text-mid: #334155;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --topbar-bg: #FFFFFF;
+  --input-bg: #F8FAFC;
+  --nav-hover: #F1F5F9;
+  --nav-active-bg: rgba(184,144,71,0.08);
+  --nav-active-border: rgba(184,144,71,0.4);
+  --modal-overlay: rgba(15,23,42,0.5);
+  --pill-curado-bg: #DCFCE7; --pill-curado-text: #166534;
+  --pill-prod-bg: #FEF3C7; --pill-prod-text: #92400E;
+  --pill-pub-bg: #EDE9FE; --pill-pub-text: #4C1D95;
+  --pill-ideia-bg: #F1F5F9; --pill-ideia-text: #475569;
+  --pill-pausado-bg: #FEE2E2; --pill-pausado-text: #991B1B;
+}
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg: #0F172A;
+  --bg-card: #1E293B;
+  --bg-card2: #243044;
+  --bg-sidebar: #1E293B;
+  --text: #E2E8F0;
+  --text-mid: #CBD5E1;
+  --text-muted: #64748B;
+  --border: #2D3F55;
+  --border-strong: #3D5068;
+  --topbar-bg: #1E293B;
+  --input-bg: #243044;
+  --nav-hover: #243044;
+  --nav-active-bg: rgba(184,144,71,0.12);
+  --nav-active-border: rgba(184,144,71,0.35);
+  --modal-overlay: rgba(0,0,0,0.7);
+  --pill-curado-bg: rgba(16,185,129,.15); --pill-curado-text: #34D399;
+  --pill-prod-bg: rgba(245,158,11,.15); --pill-prod-text: #FCD34D;
+  --pill-pub-bg: rgba(99,102,241,.15); --pill-pub-text: #A5B4FC;
+  --pill-ideia-bg: rgba(100,116,139,.15); --pill-ideia-text: #94A3B8;
+  --pill-pausado-bg: rgba(239,68,68,.1); --pill-pausado-text: #FCA5A5;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;transition:background .2s,color .2s;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:220px;min-width:220px;background:var(--bg-sidebar);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:background .2s;
+}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border);}
+.sidebar-logo .brand{font-size:18px;font-weight:800;color:var(--gold);letter-spacing:.5px;}
+.sidebar-logo .sub{font-size:11px;color:var(--text-muted);margin-top:1px;}
+
+.week-badge{margin:14px 14px 6px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;}
+.week-badge .wb-label{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);font-weight:700;}
+.week-badge .wb-week{font-size:12px;font-weight:600;color:var(--text);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.dot-live{width:6px;height:6px;background:#10B981;border-radius:50%;flex-shrink:0;}
+
+.sidebar-nav{flex:1;padding:6px 10px;overflow-y:auto;}
+.nav-group-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);padding:12px 8px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .12s;
+  font-size:13px;font-weight:500;color:var(--text-muted);
+  border:1px solid transparent;margin-bottom:1px;
+}
+.nav-item:hover{background:var(--nav-hover);color:var(--text);}
+.nav-item.active{background:var(--nav-active-bg);color:var(--gold);border-color:var(--nav-active-border);}
+.nav-item .ni-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-item .ni-svg{width:16px;height:16px;vertical-align:middle;flex-shrink:0;color:currentColor;margin-right:2px;}
+.nav-badge{margin-left:auto;background:var(--gold);color:#1E293B;font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;min-width:20px;text-align:center;}
+
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between;}
+
+/* ══ THEME TOGGLE ══ */
+.theme-toggle{
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  background:var(--bg-card2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;font-size:12px;
+  color:var(--text-muted);transition:all .12s;
+}
+.theme-toggle:hover{border-color:var(--gold-dim);color:var(--gold);}
+
+/* ══ MAIN ══ */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+.topbar{
+  background:var(--topbar-bg);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;transition:background .2s;
+  box-shadow:var(--shadow);
+}
+.topbar-left h1{font-size:18px;font-weight:700;color:var(--text);}
+.topbar-left .tb-sub{font-size:12px;color:var(--text-muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+
+.btn{padding:7px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .12s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--gold);color:#1E293B;}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--nav-hover);color:var(--text);}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-danger{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA;}
+[data-theme="dark"] .btn-danger{background:rgba(239,68,68,.15);color:#FCA5A5;border-color:rgba(239,68,68,.3);}
+
+.content{flex:1;padding:24px;overflow-y:auto;}
+
+/* ══ VIEWS ══ */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ══ STATS GRID ══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),transparent);}
+.stat-card .s-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700;}
+.stat-card .s-val{font-size:32px;font-weight:800;color:var(--text);line-height:1.1;margin:6px 0 2px;}
+.stat-card .s-sub{font-size:11px;color:var(--text-muted);}
+.stat-card .s-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:36px;height:36px;opacity:.07;color:var(--text);}
+.stat-card .s-icon svg{width:100%;height:100%;display:block;}
+
+/* ══ SECTION HEADER ══ */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-size:14px;font-weight:700;color:var(--text);}
+.section-sub{font-size:11px;color:var(--text-muted);margin-top:1px;}
+
+/* ══ CONTENT CARD ══ */
+.content-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+  margin-bottom:8px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .12s;box-shadow:var(--shadow);
+}
+.content-card:hover{border-color:var(--gold-dim);transform:translateX(3px);}
+.cc-code{font-size:10px;font-weight:700;color:var(--text-muted);width:34px;flex-shrink:0;font-family:monospace;}
+.cc-title{flex:1;font-size:13px;font-weight:500;color:var(--text);line-height:1.4;}
+.cc-meta{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+
+/* PILLS */
+.pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.pill-curado{background:var(--pill-curado-bg);color:var(--pill-curado-text);}
+.pill-prod{background:var(--pill-prod-bg);color:var(--pill-prod-text);}
+.pill-pub{background:var(--pill-pub-bg);color:var(--pill-pub-text);}
+.pill-ideia{background:var(--pill-ideia-bg);color:var(--pill-ideia-text);}
+.pill-pausado{background:var(--pill-pausado-bg);color:var(--pill-pausado-text);}
+
+.tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.tag-reel{background:rgba(245,158,11,.12);color:#B45309;}
+.tag-carrossel{background:rgba(99,102,241,.12);color:#4338CA;}
+.tag-stories{background:rgba(236,72,153,.12);color:#BE185D;}
+.tag-post{background:rgba(20,184,166,.12);color:#0F766E;}
+[data-theme="dark"] .tag-reel{background:rgba(245,158,11,.15);color:#FCD34D;}
+[data-theme="dark"] .tag-carrossel{background:rgba(99,102,241,.15);color:#A5B4FC;}
+[data-theme="dark"] .tag-stories{background:rgba(236,72,153,.15);color:#F9A8D4;}
+[data-theme="dark"] .tag-post{background:rgba(20,184,166,.15);color:#5EEAD4;}
+
+.tag-tofu{background:rgba(59,130,246,.12);color:#1D4ED8;}
+.tag-mofu{background:rgba(139,92,246,.12);color:#6D28D9;}
+.tag-bofu{background:rgba(16,185,129,.12);color:#065F46;}
+[data-theme="dark"] .tag-tofu{background:rgba(59,130,246,.15);color:#93C5FD;}
+[data-theme="dark"] .tag-mofu{background:rgba(139,92,246,.15);color:#C4B5FD;}
+[data-theme="dark"] .tag-bofu{background:rgba(16,185,129,.15);color:#6EE7B7;}
+
+.badge-obrig{background:#EF4444;color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:.3px;}
+
+/* ══ ACERVO — ABAS ══ */
+.acervo-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px;overflow-x:auto;}
+.acervo-tab{
+  padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-muted);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:all .12s;
+}
+.acervo-tab:hover{color:var(--text);}
+.acervo-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.acervo-tab .tab-count{font-size:10px;font-weight:700;background:var(--bg-card2);border:1px solid var(--border);padding:1px 5px;border-radius:10px;margin-left:5px;}
+
+/* ══ SEARCH / FILTER BAR ══ */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.search-input{
+  flex:1;max-width:260px;padding:7px 12px;
+  border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:var(--input-bg);color:var(--text);font-size:12px;
+  font-family:'Outfit',sans-serif;outline:none;transition:border-color .12s;
+}
+.search-input:focus{border-color:var(--gold-dim);}
+.search-input::placeholder{color:var(--text-muted);}
+
+/* ══ ADD IDEA BAR ══ */
+.quick-add-bar{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.quick-add-bar .qa-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);margin-bottom:10px;}
+.quick-add-row{display:flex;gap:8px;align-items:flex-end;}
+.quick-add-row .search-input{max-width:none;}
+.form-select{
+  padding:7px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:var(--input-bg);color:var(--text);font-size:12px;
+  font-family:'Outfit',sans-serif;outline:none;cursor:pointer;transition:border-color .12s;
+}
+.form-select:focus{border-color:var(--gold-dim);}
+.form-select option{background:var(--bg-card);}
+
+/* ══ PRODUÇÃO DA SEMANA ══ */
+.week-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:8px;margin-bottom:20px;
+}
+.week-col{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+.week-col-header{
+  padding:8px 10px;text-align:center;
+  border-bottom:1px solid var(--border);background:var(--bg-card2);
+}
+.wch-day{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);}
+.wch-date{font-size:14px;font-weight:700;color:var(--text);margin-top:2px;line-height:1;}
+.week-col.today-col .week-col-header{background:linear-gradient(135deg,rgba(184,144,71,.15),rgba(184,144,71,.04));}
+.week-col.today-col .wch-date{
+  color:#fff;background:var(--gold);
+  width:26px;height:26px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  margin:2px auto 0;
+}
+
+.week-col-body{padding:6px;min-height:110px;}
+.week-card{
+  background:var(--bg-card2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:7px 8px;
+  margin-bottom:5px;cursor:pointer;transition:all .1s;
+  border-left:3px solid var(--gold);
+}
+.week-card:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:var(--shadow);}
+.wk-code{font-size:9px;font-weight:800;color:var(--text-muted);font-family:monospace;margin-bottom:2px;}
+.wk-title{font-size:10px;font-weight:500;color:var(--text);line-height:1.4;}
+.wk-tags{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+
+.week-add-btn{
+  width:100%;padding:5px;border:1px dashed var(--border);
+  border-radius:var(--radius-sm);font-size:10px;color:var(--text-muted);
+  text-align:center;cursor:pointer;background:transparent;
+  transition:all .1s;margin-top:4px;font-family:'Outfit',sans-serif;
+}
+.week-add-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+
+/* Produção lista */
+.prod-list-header{
+  font-size:11px;font-weight:700;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.8px;
+  padding:10px 0 6px;border-top:1px solid var(--border);
+  margin-top:4px;display:flex;align-items:center;gap:8px;
+}
+.prod-list-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:6px;cursor:pointer;transition:all .1s;
+  box-shadow:var(--shadow);
+}
+.prod-list-item:hover{border-color:var(--gold-dim);transform:translateX(3px);}
+.pli-code{font-size:10px;font-weight:800;color:var(--text-muted);font-family:monospace;width:30px;flex-shrink:0;}
+.pli-title{flex:1;font-size:12px;font-weight:500;color:var(--text);}
+.pli-date{font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.date-picker-inline{
+  padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--input-bg);color:var(--text);font-size:11px;
+  font-family:'Outfit',sans-serif;outline:none;cursor:pointer;
+}
+.date-picker-inline:focus{border-color:var(--gold-dim);}
+
+/* ══ PIPELINE ══ */
+.pipeline-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.pipe-col{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.pipe-col-header{
+  padding:11px 13px;background:var(--bg-card2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pch-title{font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text);}
+.pch-count{font-size:10px;background:var(--bg-card);border:1px solid var(--border);padding:1px 7px;border-radius:20px;color:var(--text-muted);font-weight:700;}
+.pipe-col-body{padding:8px;min-height:160px;transition:background .15s;}
+.pipe-col-body.drag-over{background:rgba(184,144,71,.08);border:2px dashed var(--gold-dim);border-radius:var(--radius-sm);}
+.pipe-card{
+  background:var(--bg-card2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px;margin-bottom:6px;
+  cursor:grab;transition:all .15s;user-select:none;
+}
+.pipe-card:active{cursor:grabbing;}
+.pipe-card.dragging{opacity:.4;transform:rotate(1.5deg);box-shadow:0 8px 24px rgba(0,0,0,.18);}
+.pipe-card:hover{border-color:var(--gold-dim);transform:translateY(-1px);box-shadow:var(--shadow);}
+.pc-code{font-size:9px;font-weight:800;color:var(--text-muted);font-family:monospace;margin-bottom:3px;}
+.pc-title{font-size:11px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.pc-tags{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.pipe-move-btn{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);cursor:pointer;transition:all .1s;font-family:'Outfit',sans-serif;}
+.pipe-move-btn:hover{background:var(--gold);color:#1E293B;border-color:var(--gold);}
+
+/* ══ PRODUÇÃO STATS BAR ══ */
+.prod-stats-bar{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 16px;
+  margin-bottom:14px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.psb-stat{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px;}
+.psb-stat strong{color:var(--text);font-weight:700;}
+.psb-sep{color:var(--border);font-size:14px;}
+.psb-goal{margin-left:auto;font-size:12px;font-weight:700;color:var(--gold);}
+.prod-cats{
+  display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;
+}
+.cat-chip{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  border:1px solid var(--border);background:var(--bg-card2);color:var(--text-muted);
+  cursor:pointer;transition:all .12s;
+}
+.cat-chip.active,.cat-chip:hover{background:var(--gold);color:#1E293B;border-color:var(--gold);}
+.cat-chip .cc-num{font-size:10px;opacity:.75;margin-left:3px;}
+.prod-actions{display:flex;gap:8px;margin-left:auto;}
+
+/* ══ CALENDÁRIO ══ */
+.calendar-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.cal-header-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--bg-card2);border-bottom:1px solid var(--border);}
+.cal-day-header{padding:10px 6px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);}
+.cal-body{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-cell{min-height:80px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;cursor:pointer;transition:background .1s;}
+.cal-cell:hover{background:var(--bg-card2);}
+.cal-cell:nth-child(7n){border-right:none;}
+.cal-num{font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-cell.cal-today .cal-num{background:var(--gold);color:#fff;border-radius:50%;font-weight:800;}
+.cal-cell.cal-other .cal-num{color:var(--border);}
+.cal-item{font-size:9px;background:rgba(184,144,71,.12);border-left:2px solid var(--gold);border-radius:2px;padding:2px 4px;margin-bottom:2px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+.cal-item:hover{background:rgba(184,144,71,.22);}
+
+/* ══ DASHBOARD DONUT ══ */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.dash-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.dash-card .dc-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:14px;}
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut-legend .dl-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--text);}
+.dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dl-count{margin-left:auto;font-weight:700;color:var(--text);}
+
+/* ══ MÉTRICAS ══ */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.metric-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.mc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:12px;}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.bar-label{font-size:11px;color:var(--text);width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:5px;background:var(--bg-card2);border-radius:3px;border:1px solid var(--border);}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.bar-count{font-size:11px;color:var(--text-muted);width:16px;text-align:right;}
+
+/* ══ MODAL ══ */
+.modal-overlay{position:fixed;inset:0;background:var(--modal-overlay);backdrop-filter:blur(3px);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.2);}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h2{font-size:15px;font-weight:700;color:var(--text);}
+.modal-close{width:28px;height:28px;background:var(--bg-card2);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-muted);transition:all .1s;}
+.modal-close:hover{background:var(--border);color:var(--text);}
+.modal-body{padding:20px 22px;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+
+.form-group{margin-bottom:13px;}
+.form-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:5px;}
+.form-input,.form-textarea{
+  width:100%;padding:8px 11px;background:var(--input-bg);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text);font-size:13px;font-family:'Outfit',sans-serif;
+  outline:none;transition:border-color .12s;
+}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--gold-dim);}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-check{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.form-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--red);cursor:pointer;}
+.form-check label{font-size:12px;color:var(--text);cursor:pointer;}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:32px 20px;color:var(--text-muted);}
+.empty .e-icon{font-size:36px;margin-bottom:10px;}
+.empty .e-msg{font-size:13px;}
+
+/* ══ NOTIFICATION ══ */
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--bg-card);border:1px solid var(--gold-dim);
+  border-radius:var(--radius-sm);padding:10px 16px;
+  font-size:12px;color:var(--text);z-index:9999;
+  display:none;align-items:center;gap:8px;
+  box-shadow:var(--shadow-md);animation:fadeUp .2s ease;
+}
+.toast.show{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--border-strong);}
+
+/* ══ WEEK NAV BAR ══ */
+.week-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.week-nav-label{font-size:14px;font-weight:700;color:var(--text);}
+.week-stats{margin-left:auto;font-size:12px;color:var(--text-muted);}
+
+@media(max-width:1300px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .week-grid{grid-template-columns:repeat(4,1fr);}
+  .pipeline-grid{grid-template-columns:repeat(3,1fr);}
+}
+#instagram-live-metrics{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-top:20px;}
+#editorial-intelligence{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
+@media(max-width:768px){
+  #instagram-live-metrics, #editorial-intelligence{grid-template-columns:1fr;}
+}
+
+/* ══ STORIES VIEW ══ */
+.stories-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:18px;}
+.stories-tab{
+  padding:9px 18px;font-size:12px;font-weight:600;color:var(--text-muted);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:all .12s;
+}
+.stories-tab:hover{color:var(--text);}
+.stories-tab.active{color:#BE185D;border-bottom-color:#BE185D;}
+.story-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  margin-bottom:12px;box-shadow:var(--shadow);
+  border-left:3px solid rgba(236,72,153,.5);
+  transition:all .12s;
+}
+.story-card:hover{border-left-color:#EC4899;transform:translateX(2px);}
+.story-num{
+  font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:1.5px;color:#BE185D;margin-bottom:6px;
+}
+.story-title{
+  font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;
+}
+.story-meta{
+  display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;
+}
+.story-body{
+  font-size:12px;color:var(--text-mid);line-height:1.7;
+  white-space:pre-line;
+}
+.story-sticker{
+  margin-top:10px;padding:8px 12px;
+  background:rgba(236,72,153,.07);border:1px solid rgba(236,72,153,.15);
+  border-radius:var(--radius-sm);font-size:11px;color:#BE185D;font-weight:600;
+}
+.story-copy-btn{
+  margin-top:12px;padding:5px 12px;
+  background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);
+  border-radius:var(--radius-sm);font-size:11px;font-weight:700;color:#BE185D;
+  cursor:pointer;transition:all .12s;font-family:'Outfit',sans-serif;
+}
+.story-copy-btn:hover{background:rgba(236,72,153,.2);}
+.qa-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  margin-bottom:12px;box-shadow:var(--shadow);
+  border-left:3px solid rgba(139,92,246,.5);
+}
+.qa-card:hover{border-left-color:#8B5CF6;}
+.qa-question{
+  font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.qa-q-badge{
+  font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;
+  background:rgba(139,92,246,.12);color:#6D28D9;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+[data-theme="dark"] .qa-q-badge{background:rgba(139,92,246,.2);color:#C4B5FD;}
+.qa-script{
+  font-size:12px;color:var(--text-mid);line-height:1.75;
+  white-space:pre-line;padding-top:8px;border-top:1px solid var(--border);
+}
+.ga-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  margin-bottom:12px;box-shadow:var(--shadow);
+  border-left:3px solid rgba(16,185,129,.5);
+}
+.ga-card:hover{border-left-color:#10B981;}
+.ga-when{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:1.2px;color:#059669;margin-bottom:6px;
+}
+.ga-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.ga-quote{
+  font-size:12px;color:var(--text-mid);line-height:1.7;
+  padding:10px 14px;background:rgba(16,185,129,.06);
+  border-radius:var(--radius-sm);border-left:2px solid #10B981;
+  white-space:pre-line;
+}
+.ga-why{
+  font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.6;
+}
+.stories-section-header{
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-muted);margin:20px 0 10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">⬡ VÉRTICE</div>
+    <div class="sub">Gestão de Conteúdo</div>
+  </div>
+
+  <div class="week-badge">
+    <div class="wb-label">Semana Ativa</div>
+    <div class="wb-week"><span class="dot-live"></span><span id="wb-range">—</span></div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Principal</div>
+    <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg> Dashboard
+    </div>
+    <div class="nav-item" onclick="showView('acervo')" id="nav-acervo">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Acervo de Temas
+      <span class="nav-badge" id="nb-acervo">0</span>
+    </div>
+    <div class="nav-group-label">Produção</div>
+    <div class="nav-item" onclick="showView('producao')" id="nav-producao">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Produção da Semana
+      <span class="nav-badge" id="nb-producao">0</span>
+    </div>
+    <div class="nav-item" onclick="showView('pipeline')" id="nav-pipeline">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Pipeline
+    </div>
+    <div class="nav-item" onclick="showView('calendario')" id="nav-calendario">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Calendário
+    </div>
+    <div class="nav-group-label">Conteúdo</div>
+    <div class="nav-item" onclick="showView('stories')" id="nav-stories">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><circle cx="12" cy="21" r="1"/><path d="M9 21h6"/></svg> Stories
+      <span class="nav-badge" style="background:rgba(236,72,153,.85);">9</span>
+    </div>
+    <div class="nav-group-label">Análise</div>
+    <div class="nav-item" onclick="showView('metricas')" id="nav-metricas">
+      <svg class="ni-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg> Métricas
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span>Leo Cauchioli</span>
+    <div class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn">🌙 Dark</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="tb-title">Dashboard</h1>
+      <div class="tb-sub" id="tb-sub">Visão geral da sua semana editorial</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()">⬇ Exportar</button>
+      <button class="btn btn-ghost btn-sm" onclick="openAdd()">+ Nova Ideia</button>
+      <button class="btn btn-primary btn-sm" onclick="openAdd()">+ Adicionar Conteúdo</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="s-label">Acervo Total</div>
+          <div class="s-val" id="s-total">0</div>
+          <div class="s-sub">Ideias mapeadas</div>
+          <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Curados</div>
+          <div class="s-val" id="s-curado">0</div>
+          <div class="s-sub">Prontos pra produção</div>
+          <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Em Produção</div>
+          <div class="s-val" id="s-producao">0</div>
+          <div class="s-sub">Esta semana</div>
+          <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="s-label">Publicados</div>
+          <div class="s-val" id="s-publicado">0</div>
+          <div class="s-sub">Total geral</div>
+          <div class="s-icon"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg></div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- Donut por motor -->
+        <div class="dash-card">
+          <div class="dc-title">Distribuição por Pilar</div>
+          <div class="donut-wrap">
+            <canvas id="donut-canvas" width="110" height="110"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+        <!-- Progresso da semana -->
+        <div class="dash-card">
+          <div class="dc-title">Semana Atual — Agendamentos</div>
+          <div id="dash-week-mini"></div>
+        </div>
+      </div>
+
+      <!-- Instagram Live Summary (Análise do Perfil no Dashboard) -->
+      <div class="dash-card" id="dash-ig-summary" style="margin-top:16px;">
+        <div class="dc-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;">
+          <span>Canal do Instagram — Desempenho do Perfil</span>
+          <span style="font-size:10px;color:var(--gold);font-weight:700;cursor:pointer;" onclick="showView('metricas')">Ver análise completa →</span>
+        </div>
+        <div id="dash-ig-content">
+          <!-- Conteúdo gerado dinamicamente via renderDashboardInstagram() -->
+        </div>
+      </div>
+
+
+      <div class="section-header">
+        <div><div class="section-title">Últimas Ideias Adicionadas</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="showView('acervo')">Ver acervo →</button>
+      </div>
+      <div id="dash-recent"></div>
+    </div>
+
+    <!-- ══ ACERVO ══ -->
+    <div class="view" id="view-acervo">
+      <div class="quick-add-bar">
+        <div class="qa-title">Captura Rápida — Digite aqui o que você pensou</div>
+        <div class="quick-add-row">
+          <input class="search-input" id="qa-titulo" placeholder="Ex: POV: você ainda cobra por hora em 2026..." style="max-width:none;flex:1">
+          <select class="form-select" id="qa-formato">
+            <option>Reel Curto</option><option>Reel Falado</option>
+            <option>Carrossel</option><option>Stories</option><option>Post Foto</option>
+          </select>
+          <select class="form-select" id="qa-funil">
+            <option>TOFU</option><option>MOFU</option><option>BOFU</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="quickAdd()">Adicionar</button>
+        </div>
+      </div>
+
+      <div class="acervo-tabs">
+        <div class="acervo-tab active" onclick="setAcervoTab('Curado',this)">Curados <span class="tab-count" id="tc-curado">0</span></div>
+        <div class="acervo-tab" onclick="setAcervoTab('Ideia',this)">Banco Frio <span class="tab-count" id="tc-ideia">0</span></div>
+        <div class="acervo-tab" onclick="setAcervoTab('Reformular',this)">Reformular <span class="tab-count" id="tc-reformular">0</span></div>
+        <div class="acervo-tab" onclick="setAcervoTab('Sobra',this)">Sobras de Séries <span class="tab-count" id="tc-sobra">0</span></div>
+        <div class="acervo-tab" onclick="setAcervoTab('Publicado',this)">Publicados <span class="tab-count" id="tc-publicado">0</span></div>
+      </div>
+
+      <div class="filter-bar">
+          <input class="search-input" id="search-acervo" placeholder="Buscar tema..." oninput="renderAcervo()">
+          <select class="form-select" id="filter-funil" onchange="renderAcervo()">
+          <option value="">Todos os funis</option>
+          <option>TOFU</option><option>MOFU</option><option>BOFU</option>
+        </select>
+        <select class="form-select" id="filter-formato" onchange="renderAcervo()">
+          <option value="">Todos os formatos</option>
+          <option>Reel Curto</option><option>Reel Falado</option>
+          <option>Carrossel</option><option>Stories</option>
+        </select>
+        <select class="form-select" id="filter-serie" onchange="renderAcervo()" style="border-color:rgba(250,204,21,.3);color:var(--gold);font-weight:700;">
+          <option value="">Todas as séries</option>
+          <option value="Doug">📚 Doug Demarco</option>
+          <option value="Vibecodando">Vibecodando</option>
+        </select>
+      </div>
+      <div id="acervo-list"></div>
+    </div>
+
+    <!-- ══ PRODUÇÃO DA SEMANA ══ -->
+    <div class="view" id="view-producao">
+      <!-- Nav da semana -->
+      <div class="week-nav">
+        <button class="btn btn-ghost btn-sm" onclick="navWeek(-1)">← Anterior</button>
+        <span class="week-nav-label" id="prod-week-label">—</span>
+        <button class="btn btn-ghost btn-sm" onclick="navWeek(1)">Próxima →</button>
+        <button class="btn btn-ghost btn-sm" onclick="navWeek(0)">Hoje</button>
+      </div>
+
+      <!-- Stats bar (estilo PQV) -->
+      <div class="prod-stats-bar" id="prod-stats-bar"></div>
+
+      <!-- Chips de categoria + ações -->
+      <div class="prod-cats" id="prod-cats"></div>
+
+      <!-- Calendário semanal -->
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px;">📅 Calendário da semana</div>
+      <div class="week-grid" id="week-grid"></div>
+
+      <!-- Lista em produção -->
+      <div class="prod-list-header" id="prod-list-header">
+        Em Produção — atribua a data
+      </div>
+      <div id="prod-list"></div>
+    </div>
+
+    <!-- ══ PIPELINE ══ -->
+    <div class="view" id="view-pipeline">
+      <div class="section-header" style="margin-bottom:16px">
+        <div><div class="section-title">Pipeline de Produção</div>
+        <div class="section-sub">Arraste os cards entre colunas ou use o botão → para avançar</div></div>
+      </div>
+      <div class="pipeline-grid" id="pipeline-grid"></div>
+    </div>
+
+    <!-- ══ CALENDÁRIO ══ -->
+    <div class="view" id="view-calendario">
+      <div class="week-nav">
+        <button class="btn btn-ghost btn-sm" onclick="navMonth(-1)">← Anterior</button>
+        <span class="week-nav-label" id="cal-label">—</span>
+        <button class="btn btn-ghost btn-sm" onclick="navMonth(1)">Próximo →</button>
+        <button class="btn btn-ghost btn-sm" onclick="navMonth(0)">Hoje</button>
+      </div>
+      <div class="calendar-wrap">
+        <div class="cal-header-row">
+          <div class="cal-day-header">Dom</div><div class="cal-day-header">Seg</div>
+          <div class="cal-day-header">Ter</div><div class="cal-day-header">Qua</div>
+          <div class="cal-day-header">Qui</div><div class="cal-day-header">Sex</div>
+          <div class="cal-day-header">Sáb</div>
+        </div>
+        <div class="cal-body" id="cal-body"></div>
+      </div>
+    </div>
+
+    <!-- ══ MÉTRICAS ══ -->
+    <div class="view" id="view-metricas">
+      <div class="metrics-grid" id="metrics-grid"></div>
+      
+      <!-- Seção do Instagram Live -->
+      <div class="section-header" style="margin-top:30px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div class="section-title" id="ig-section-title">Analytics Instagram (Ao Vivo)</div>
+          <div class="section-sub" id="ig-section-sub">Métricas e performance em tempo real de @leocauchiolli</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openTokenModal()" style="font-size:11px;display:flex;align-items:center;gap:4px;">⚙️ Configurar Token</button>
+      </div>
+
+      <!-- Alerta de Token Expirado -->
+      <div id="ig-token-warning" style="display:none;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;color:var(--text);font-size:12px;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-left:4px solid #ef4444;width:100%;box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">⚠️</span>
+          <span>
+            <strong>Sincronização offline:</strong> Token de acesso expirado ou inválido.
+            Seus dados históricos e publicações salvos em cache estão 100% preservados e seguros.
+          </span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openTokenModal()" style="color:#ef4444;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);font-weight:700;font-size:11px;">Atualizar Token</button>
+      </div>
+
+      <div id="instagram-live-metrics">
+        <!-- Profile Card -->
+        <div id="ig-profile-card" class="metric-card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:24px;">
+          <div style="font-size:12px;color:var(--text-muted);">Carregando perfil do Instagram...</div>
+        </div>
+        <!-- Media List -->
+        <div id="ig-media-card" class="metric-card" style="padding:20px;">
+          <div style="font-size:12px;color:var(--text-muted);">Carregando publicações recentes...</div>
+        </div>
+      </div>
+      <!-- Linha do Tempo e Cruzamento Editorial (Últimos 30 dias) -->
+      <div class="metric-card" id="ig-timeline-card" style="margin-top: 16px; padding: 20px;">
+        <div class="mc-title" style="margin-bottom: 8px; font-size: 14px; font-weight: 700;">📅 Linha do Tempo & Cruzamento Editorial (Últimos 30 Dias)</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom: 15px;">
+          Tráfego diário do perfil (Alcance) cruzado com publicações e horários exatos para identificar o que traciona mais audiência.
+        </div>
+        <div id="ig-timeline-content" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+          <div style="font-size:12px;color:var(--text-muted);text-align:center;padding:20px;">
+            Carregue as métricas para visualizar a linha do tempo.
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel Demográfico (Audiência do Instagram) -->
+      <div class="metric-card" id="ig-audience-card-container" style="margin-top: 16px; padding: 20px;">
+        <div class="mc-title" style="margin-bottom: 8px; font-size: 14px; font-weight: 700;">Seguidores — Gênero, Idade & Localização</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom: 12px;">
+          Distribuição demográfica e de público-alvo dos seus seguidores consolidada no perfil do Instagram.
+        </div>
+        <div id="ig-audience-card">
+          <!-- Conteúdo gerado dinamicamente via renderAudienceDemographics() -->
+        </div>
+      </div>
+
+      <!-- Inteligência Editorial -->
+      <div class="section-header" style="margin-top:30px;margin-bottom:16px;">
+        <div>
+          <div class="section-title">Inteligência Editorial Vértice</div>
+          <div class="section-sub">Cruzamento de estratégias de conteúdo (Funil, Pilar, Legenda) com engajamento real</div>
+        </div>
+      </div>
+      <div id="editorial-intelligence">
+        <div class="metric-card" id="intel-pillars">
+          <div class="mc-title">Pilar vs Performance Média (Real)</div>
+          <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Vincule posts para gerar análise de performance.</div>
+        </div>
+        <div class="metric-card" id="intel-captions">
+          <div class="mc-title">Legenda vs Performance Média (Real)</div>
+          <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Vincule posts para gerar análise de performance.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STORIES ══ -->
+    <div class="view" id="view-stories">
+
+      <div class="stories-tabs">
+        <div class="stories-tab active" onclick="setStoriesTab('sequencias',this)" id="stab-sequencias">📲 Sequências Prontas</div>
+        <div class="stories-tab" onclick="setStoriesTab('gabarito',this)" id="stab-gabarito">🎬 Gabarito — Caixa de Perguntas</div>
+        <div class="stories-tab" onclick="setStoriesTab('garantias',this)" id="stab-garantias">🛡️ Garantias Hormozi</div>
+      </div>
+
+      <!-- TAB: Sequências -->
+      <div id="stories-panel-sequencias">
+        <div class="stories-section-header">Sequência 1 — Do Boomerang do Otávio à Oferta Vértice (4 Stories)</div>
+
+        <div class="story-card">
+          <div class="story-num">Story 1 de 4 · Bastidor · Bastidor</div>
+          <div class="story-title">Explicando a Engenharia do Boomerang</div>
+          <div class="story-meta">
+            <span class="tag tag-stories">Stories</span>
+            <span class="tag tag-tofu">TOFU</span>
+            <span class="pill pill-curado">Curado</span>
+            <span style="font-size:10px;color:var(--text-muted);">Formato: Vídeo bastidor 10–15s ou print do notebook</span>
+          </div>
+          <div class="story-body">Muita gente viu o boomerang que postei e não entendeu o tamanho do jogo.
+
+O que a gente está rodando nos bastidores com o Dr. Otávio é a <b>Operação Auxílio-Acidente</b>:
+
+🧬 Mapeamento completo da tese jurídica de acidente de trabalho
+👤 Persona do trabalhador que tem direito ao benefício
+🎥 Vídeos UGC para anúncio + vídeos de conexão padrão para o WhatsApp
+
+Para que o cliente se sinta seguro antes da primeira conversa com o Dr. Otávio.</div>
+          <div class="story-sticker">💡 Sticker: Nenhum — deixa aberto para o próximo Story</div>
+          <button class="story-copy-btn" onclick="copyStory(this)">📋 Copiar texto</button>
+        </div>
+
+        <div class="story-card">
+          <div class="story-num">Story 2 de 4 · Contraste de Valor</div>
+          <div class="story-title">A Queda do Status — Você Não Precisa Começar Por Aqui</div>
+          <div class="story-meta">
+            <span class="tag tag-stories">Stories</span>
+            <span class="tag tag-mofu">MOFU</span>
+            <span class="pill pill-curado">Curado</span>
+            <span style="font-size:10px;color:var(--text-muted);">Formato: Foto sua ou do espaço de trabalho</span>
+          </div>
+          <div class="story-body">Parece complexo? Porque é.
+
+Essa é uma estrutura avançada de sócio de growth operacional.
+
+Mas aqui está o ponto central: <b>você não precisa começar por aqui</b>.
+
+Para o seu escritório parar de perder 3 horas por dia em burocracia e começar a atrair clientes qualificados, o primeiro passo é muito mais simples:
+
+É colocar o <b>Cérebro de IA</b> na sua operação e um site de alta conversão no ar.
+
+Isso é o que a Vértice faz.</div>
+          <div class="story-sticker">📊 Sticker: Enquete — &quot;Você já tentou usar IA no seu escritório?&quot; | [ ] Sim | [ ] Ainda não</div>
+          <button class="story-copy-btn" onclick="copyStory(this)">📋 Copiar texto</button>
+        </div>
+
+        <div class="story-card">
+          <div class="story-num">Story 3 de 4 · Demonstração de Mágica</div>
+          <div class="story-title">IA na Prática — Screencast do NotebookLM</div>
+          <div class="story-meta">
+            <span class="tag tag-stories">Stories</span>
+            <span class="tag tag-mofu">MOFU</span>
+            <span class="pill pill-curado">Curado</span>
+            <span style="font-size:10px;color:var(--text-muted);">Formato: Gravação de tela 15–20s (áudio fictício)</span>
+          </div>
+          <div class="story-body">Você grava a consulta no celular.
+
+Sobe o áudio aqui no NotebookLM.
+
+E em segundos a IA gera a ata estruturada, a lista de documentos que o cliente precisa trazer e um rascunho da petição inicial.
+
+Sem inventar fato. Sem juridiquês automático. E sem você gastar 3 horas numa terça à noite.
+
+<b>Esse é o fluxo que eu implanto em 24 horas no escritório de quem me procura.</b></div>
+          <div class="story-sticker">❓ Sticker: Caixa de perguntas — &quot;Qual tarefa mais burra consome o seu tempo hoje?&quot;</div>
+          <button class="story-copy-btn" onclick="copyStory(this)">📋 Copiar texto</button>
+        </div>
+
+        <div class="story-card">
+          <div class="story-num">Story 4 de 4 · CTA + Direct</div>
+          <div class="story-title">CTA — Caixa de Perguntas + Convite para Direct</div>
+          <div class="story-meta">
+            <span class="tag tag-stories">Stories</span>
+            <span class="tag tag-bofu">BOFU</span>
+            <span class="pill pill-curado">Curado</span>
+            <span style="font-size:10px;color:var(--text-muted);">Formato: Fundo limpo, texto centralizado</span>
+          </div>
+          <div class="story-body">Já recebi algumas respostas na caixa de perguntas.
+
+Vou responder as principais ao vivo, mostrando <b>como a IA resolve esse problema específico no seu escritório</b>.
+
+Se você ainda não mandou, manda agora ↓
+
+E se quiser que eu olhe o seu caso em particular, me mande <b>&quot;ECOSSISTEMA&quot;</b> no Direct. A gente agenda um diagnóstico gratuito de 15 minutos.</div>
+          <div class="story-sticker">📥 Sticker: Caixa de perguntas aberta — &quot;Manda sua dúvida sobre IA no escritório&quot;</div>
+          <button class="story-copy-btn" onclick="copyStory(this)">📋 Copiar texto</button>
+        </div>
+      </div>
+
+      <!-- TAB: Gabarito -->
+      <div id="stories-panel-gabarito" style="display:none">
+        <div class="stories-section-header">5 Roteiros de Resposta — Vídeo de ~30s para a Caixa de Perguntas</div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">Estrutura de cada resposta: <b>Gancho (0–5s)</b> → Problema real (5–12s) → Resposta direta com demonstração (12–25s) → CTA para Direct (25–30s)</p>
+
+        <div class="qa-card">
+          <div class="qa-question"><span class="qa-q-badge">Pergunta 1</span>"Isso é seguro? E os dados do meu cliente?"</div>
+          <div class="qa-script">"Dr., você perguntou sobre segurança de dados. Pergunta absolutamente legítima."
+
+O medo real aqui é: "Se eu subir o áudio da consulta numa IA, meu cliente pode ser exposto?"
+
+A resposta direta é: <b>não</b>, se você usar o fluxo certo.
+
+O NotebookLM não usa o conteúdo dos seus notebooks para treinar modelos públicos — diferente do ChatGPT gratuito. Seus dados ficam vinculados exclusivamente à sua conta Google.
+
+Além disso, você nunca insere nome completo, CPF ou número de processo nos prompts. Usa "o cliente", "a parte", as iniciais. O fluxo permanece compatível com a LGPD.
+
+✅ CTA: "Quer o passo a passo completo? Me manda 'GUIA' no Direct que eu te mando o framework gratuito."</div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-question"><span class="qa-q-badge">Pergunta 2</span>"A OAB permite usar IA nos processos?"</div>
+          <div class="qa-script">"Pergunta certeira. Você perguntou se a OAB permite usar IA no exercício da advocacia."
+
+O Provimento 205/2021 da OAB regula a publicidade e o marketing do advogado. Ele não proíbe o uso de IA como ferramenta operacional.
+
+A lógica é simples: <b>IA é uma ferramenta de escritório, não um substituto do advogado</b>.
+
+É equivalente a usar o Word para redigir uma petição, o Astrea para organizar os processos ou o Excel para controlar os honorários. A responsabilidade técnica e a assinatura são sempre do profissional.
+
+O que a OAB regula é a forma de comunicação com o público — é aí que a Vértice entra para garantir conformidade.
+
+✅ CTA: "Tem mais dúvidas sobre o que pode e o que não pode? Me manda aqui no Direct."</div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-question"><span class="qa-q-badge">Pergunta 3</span>"E se a IA inventar uma lei ou número de processo falso?"</div>
+          <div class="qa-script">"Essa é a dúvida mais importante que qualquer advogado deve ter antes de usar IA."
+
+O problema que você está descrevendo se chama <b>alucinação</b>. E ele existe — mas é evitável com o fluxo correto.
+
+O segredo está em usar IA com <b>fontes fechadas</b>, não em pedir para a IA "lembrar" de leis.
+
+No NotebookLM, você sobe os documentos do seu cliente, a jurisprudência do seu Tribunal e os manuais do seu nicho. A IA só responde com base naquilo. Ela não inventa.
+
+Para a jurisprudência, você usa uma IA jurídica como o Jus IA — que busca em bases reais.
+
+Esse fluxo de tripla checagem é o núcleo do que eu ensino e implanto.
+
+✅ CTA: "Quer ver como funciona na prática? Me manda 'DEMO' aqui no Direct."</div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-question"><span class="qa-q-badge">Pergunta 4</span>"Mas eu sou leigo em tecnologia. Isso é pra mim?"</div>
+          <div class="qa-script">"Você disse que não é de tecnologia e ficou com medo de não conseguir usar IA."
+
+Entendo. E vou ser direto: <b>o fluxo que eu ensino não exige uma linha de código</b>.
+
+O NotebookLM funciona assim: você vai no site, cria um notebook, sobe o arquivo de áudio e digita uma pergunta em português. É literalmente isso.
+
+O Claude também: você abre o site, cola o texto e pede o que precisa. Em português, sem jargão.
+
+Já ensinei esse fluxo para advogados de 55 anos que nunca tinham ouvido falar de IA. Em 40 minutos de treinamento, eles saíram gerando atas automaticamente.
+
+✅ CTA: "Se você quer ver isso ao vivo, me manda 'TREINO' aqui no Direct e a gente agenda 15 minutos."</div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-question"><span class="qa-q-badge">Pergunta 5</span>"Quanto tempo leva para implementar tudo isso?"</div>
+          <div class="qa-script">"Você perguntou quanto tempo leva para o escritório estar operando com IA."
+
+Depende do nível:
+
+O básico — NotebookLM + Claude configurado com os prompts do seu nicho — você consegue em <b>2 horas</b> usando o Kit IA First que disponibilizo.
+
+A consultoria completa — Dossiê de Posicionamento, Ecossistema de IA configurado, Agente de Conteúdo e Site OAB-compliant — eu entrego em <b>uma semana de trabalho semanal</b> com você.
+
+O modelo que aplico com meus clientes é de R$ 500 por semana durante 4 semanas. Você vê resultado na primeira semana ou a gente continua de graça até conseguir.
+
+✅ CTA: "Quer entender qual dos dois modelos faz mais sentido para o seu escritório agora? Me manda 'VERTICE' aqui no Direct."</div>
+        </div>
+      </div>
+
+      <!-- TAB: Garantias -->
+      <div id="stories-panel-garantias" style="display:none">
+        <div class="stories-section-header">3 Garantias Hormozi — Sem Custo Financeiro de Saída</div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">Baseadas no princípio de reversão de risco extrema do $100M Offers. Escolha a garantia conforme a situação do lead.</p>
+
+        <div class="ga-card">
+          <div class="ga-when">Lead frio — Cético com resultado</div>
+          <div class="ga-title">Garantia 1 — Condicional de Esforço</div>
+          <div class="ga-quote">"Dr., minha proposta é simples: se o senhor participar das nossas calls de alinhamento semanais e executar os passos que vamos combinar, e na primeira semana você não economizar pelo menos 10 horas de trabalho operacional no escritório — eu continuo trabalhando com você individualmente, de graça, até atingirmos essa meta. A decisão de parar é sempre sua. O risco de não ter resultado fica comigo."</div>
+          <div class="ga-why">✅ Por que funciona: Remove o medo de "pagar e não usar". Exige comprometimento do cliente (filtra quem não vai implementar). Custo real: zero, se o cliente seguir o processo.</div>
+        </div>
+
+        <div class="ga-card">
+          <div class="ga-when">Lead preocupado com OAB / Regulação</div>
+          <div class="ga-title">Garantia 2 — Anti-Infração OAB</div>
+          <div class="ga-quote">"Eu entrego o site e toda a comunicação digital dentro do Provimento 205/2021. Mas se nos primeiros 60 dias de publicação, qualquer comissão de ética do seu estado identificar alguma desconformidade no material que produzimos juntos — eu refaço e adequo toda a estrutura de graça e imediatamente. Sem discussão."</div>
+          <div class="ga-why">✅ Por que funciona: Resolve a objeção mais específica do ICP jurídico — o medo de advertência da OAB. Custo real: baixo. Se o site foi feito com conformidade OAB, a chance de acionamento é mínima.</div>
+        </div>
+
+        <div class="ga-card">
+          <div class="ga-when">Lead de ticket alto (R$ 2.997+) — Indeciso na call</div>
+          <div class="ga-title">Garantia 3 — Satisfação de Ativos (Revisões Ilimitadas)</div>
+          <div class="ga-quote">"O projeto só é encerrado quando o senhor aprovar formalmente três coisas: a velocidade e o design do site, a precisão do agente de IA no seu nicho específico, e o tom de voz do Dossiê de Posicionamento. O senhor tem revisões ilimitadas por 15 dias após cada entrega. Não existe 'pegar ou largar' — existe um processo iterativo até você estar satisfeito."</div>
+          <div class="ga-why">✅ Por que funciona: Elimina o medo de receber algo genérico sem poder mudar. Cria percepção de serviço premium artesanal. Advogados respondem muito bem a garantias com termos claros.</div>
+        </div>
+
+        <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--radius);padding:14px 16px;margin-top:4px;">
+          <div style="font-size:11px;font-weight:700;color:#059669;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;">📌 Quando usar cada garantia</div>
+          <div style="font-size:12px;color:var(--text-mid);line-height:1.8;">
+            <b>Lead frio no Instagram</b> → Garantia 1 (Esforço Condicional) logo na negociação no Direct<br>
+            <b>Lead quente preocupado com OAB</b> → Garantia 2 Anti-Infração para destravar<br>
+            <b>Lead de ticket alto (R$ 2.997+) na call</b> → Garantia 3 de Satisfação de Ativos para fechar
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL ADICIONAR/EDITAR -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Nova Ideia de Conteúdo</h2>
+      <div class="modal-close" onclick="closeModal('modal-add')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título / Headline na Tela *</label>
+        <input class="form-input" id="f-titulo" placeholder="Ex: POV: você ainda cobra por hora...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Formato</label>
+          <select class="form-select" id="f-formato" style="width:100%">
+            <option>Reel Curto</option><option>Reel Falado</option>
+            <option>Carrossel</option><option>Stories</option><option>Post Foto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Funil</label>
+          <select class="form-select" id="f-funil" style="width:100%">
+            <option>TOFU</option><option>MOFU</option><option>BOFU</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Pilar</label>
+          <select class="form-select" id="f-pilar" style="width:100%">
+            <option>Bastidor</option><option>Doutrina</option><option>Prova Social</option>
+            <option>Autoridade</option><option>Oferta</option><option>Expansão/Meme</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="f-status" style="width:100%">
+            <option value="Ideia">Banco Frio (Ideia)</option>
+            <option value="Curado">Curado</option>
+            <option value="Em Produção">Em Produção</option>
+            <option value="Reformular">Reformular</option>
+            <option value="Sobra">Sobra de Série</option>
+            <option value="Publicado">Publicado</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">CTA</label>
+          <select class="form-select" id="f-cta" style="width:100%">
+            <option>WhatsApp</option><option>PRINCIPIUM™</option>
+            <option>Kit R$47</option><option>Seguir</option><option>Bio</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de Publicação</label>
+          <input type="date" class="form-input" id="f-data">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Série (opcional)</label>
+        <input class="form-input" id="f-serie" placeholder="Ex: Bastidor Otávio, Vibecodando...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Legenda / Copy (opcional)</label>
+        <textarea class="form-textarea" id="f-legenda" placeholder="Cole aqui o texto da legenda..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Objetivo / Estratégia (Por quê?)</label>
+        <textarea class="form-textarea" id="f-porque" placeholder="Qual o objetivo estratégico desse post? (Ex: Humanização, atração, quebra de objeção...)"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roteiro / Estrutura do Vídeo (opcional)</label>
+        <textarea class="form-textarea" id="f-roteiro" placeholder="Gancho, desenvolvimento, CTA (Ex: 0-3s: Gancho forte...)"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Slides do Carrossel (opcional)</label>
+        <textarea class="form-textarea" id="f-slides" placeholder="Escreva o texto de cada slide separado por --- (Ex: Slide 1 --- Slide 2...)"></textarea>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="f-obrig">
+        <label for="f-obrig">Marcar como OBRIGATÓRIO (prioridade máxima)</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" id="delete-btn" style="margin-right:auto;display:none" onclick="deleteContent()">Excluir</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-add')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveContent()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="detail-title">—</h2>
+      <div class="modal-close" onclick="closeModal('modal-detail')">✕</div>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" style="margin-right:auto" onclick="deleteContent()">Excluir</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-detail')">Fechar</button>
+      <button class="btn btn-ghost" id="d-edit-btn">Editar</button>
+      <button class="btn btn-primary" id="d-advance-btn">Avançar Status →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TOKEN -->
+<div class="modal-overlay" id="modal-token">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h2>Configurar Token do Instagram</h2>
+      <div class="modal-close" onclick="closeModal('modal-token')">✕</div>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">
+        O token de acesso do Facebook Graph API expira a cada 60 dias. Cole o novo token temporário gerado no Meta for Developers abaixo para restabelecer a sincronização em tempo real.
+      </p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label" style="font-weight:600;margin-bottom:6px;display:block;">Facebook Graph API Token *</label>
+        <textarea class="form-textarea" id="f-new-token" placeholder="Cole o token começando com EAAU..." style="height:100px;font-family:monospace;font-size:11px;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-token')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewToken()">Atualizar Sincronização</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-msg">Salvo!</span></div>
+
+<script>
+// ══════════ DATA ══════════
+const INIT = [
+  {id:"D01",titulo:"POV: Você parou de escrever atas e a IA faz isso em 10 segundos",formato:"Reel Curto",funil:"TOFU",pilar:"Autoridade",status:"Curado",cta:"PRINCIPIUM™",obrig:true,legenda:"Toda vez que você tenta anotar tudo que o cliente fala em uma consulta, você deixa de prestar atenção no que realmente importa: fechar a venda. Na Vértice, gravamos o áudio, processamos em IA e em segundos temos a ata, o contrato e as pendências prontas.",serie:"",data:""},
+{id:"D02",titulo:"Você não vende para todo mundo — e isso é o seu maior ativo",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-03-25",likes:18,comments:1,views:813,reach:350,shares:0,saved:1,total_interactions:21,ig_post_id:"17926253022253446"},
+  {id:"D03",titulo:"A faculdade te ensinou a ser um digitador caro",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D04",titulo:"Se você cobra no chute, em algum momento você está pagando para trabalhar",formato:"Reel Curto",funil:"TOFU",pilar:"Autoridade",status:"Curado",cta:"Kit R$47",obrig:false,legenda:"Aluguel do escritório, sistemas, pro-labore, impostos... tudo custa. Quando você divide o seu custo fixo pelas suas 170 horas produtivas mensais, você encontra sua Hora-Base mínima.",serie:"",data:""},
+{id:"D05",titulo:"Você ainda responde WhatsApp de cliente às 23h?",formato:"Reel Curto",funil:"TOFU",pilar:"Bastidor",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-06-12",likes:19,comments:3,views:519,reach:292,shares:0,saved:0,total_interactions:22,ig_post_id:"17869241703544946"},
+  {id:"D06",titulo:"Fazer conteúdo técnico de lei afasta seu cliente — aqui está o porquê",formato:"Reel Falado",funil:"TOFU",pilar:"Doutrina",status:"Ideia",cta:"Seguir",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D07",titulo:"Eu fui em um evento de advocacia e vi o mesmo erro em 80% das bancas",formato:"Reel Falado",funil:"TOFU",pilar:"Bastidor",status:"Ideia",cta:"Seguir",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D08",titulo:"O clínico geral ganha menos que o neurocirurgião. Você sabe por quê?",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Curado",cta:"Seguir",obrig:false,legenda:"",serie:"",data:""},
+{id:"D09",titulo:"Você se comporta como autônomo invisível. Seu cliente percebe.",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-06-15",likes:21,comments:7,views:617,reach:206,shares:2,saved:0,total_interactions:32,ig_post_id:"17968303563115314"},
+  {id:"D10",titulo:"Frentista à noite, advogado de dia — o que a escassez me ensinou sobre produtividade",formato:"Reel Falado",funil:"TOFU",pilar:"Bastidor",status:"Curado",cta:"Seguir",obrig:false,legenda:"",serie:"Leo Origin",data:""},
+  {id:"D11",titulo:"3 ferramentas de IA gratuitas que qualquer advogado deveria usar hoje",formato:"Reel Curto",funil:"TOFU",pilar:"Autoridade",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"",serie:"",data:""},
+{id:"D12",titulo:"Se o seu site fala de 'paixão pela justiça', você já perdeu o cliente",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-01-23",likes:9,comments:0,views:924,reach:357,shares:0,saved:2,total_interactions:13,ig_post_id:"18064430786256247"},
+  {id:"D13",titulo:"Os 5 pilares que separam o advogado-empresa do advogado-autônomo",formato:"Carrossel",funil:"MOFU",pilar:"Doutrina",status:"Curado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D14",titulo:"Como calcular seu Custo Mensal do Posto (CMP) — passo a passo",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Curado",cta:"Kit R$47",obrig:true,legenda:"",serie:"",data:""},
+  {id:"D15",titulo:"A OAB e a faculdade mentiram para você sobre honorários",formato:"Carrossel",funil:"MOFU",pilar:"Doutrina",status:"Ideia",cta:"Kit R$47",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D16",titulo:"O funil de vendas do escritório de advocacia — do lead ao contrato",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D17",titulo:"ROI de tráfego pago para advocacia: eu investi R$1.000 e aqui está a conta",formato:"Reel Falado",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D18",titulo:"Sua persona não é 'qualquer pessoa que precisa de advogado'",formato:"Carrossel",funil:"MOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D19",titulo:"Por que eu não coloquei 'trabalhista' no site do meu cliente previdenciarista",formato:"Reel Falado",funil:"MOFU",pilar:"Prova Social",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"Case Giulia",data:""},
+  {id:"D20",titulo:"Checklist: seu escritório está estruturado como empresa ou como bico?",formato:"Carrossel",funil:"MOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D21",titulo:"NotebookLM na prática: como eu uso para transformar reuniões em petições",formato:"Reel Falado",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"",serie:"",data:""},
+{id:"D22",titulo:"O que é CAC e por que o advogado que não sabe esse número trabalha de graça",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Publicado",cta:"Kit R$47",obrig:false,legenda:"",serie:"",data:"2026-06-08",likes:20,comments:1,views:607,reach:211,shares:3,saved:5,total_interactions:30,ig_post_id:"18100496408143160"},
+  {id:"D23",titulo:"Você tem uma taxa de conversão de 10% e acha pouco — mas a matemática...",formato:"Reel Falado",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D24",titulo:"Como ajudei um advogado a sair do zero digital para o primeiro cliente em 30 dias",formato:"Reel Falado",funil:"BOFU",pilar:"Prova Social",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Em 30 dias mudamos isso. Primeiro: focamos o site apenas no nicho. Segundo: identidade visual premium. Terceiro: linha editorial baseada em dores reais.",serie:"Case 30 dias",data:""},
+  {id:"D25",titulo:"PRINCIPIUM™: o que está dentro do kit e por que custa R$97",formato:"Carrossel",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D26",titulo:"Kit Precificação R$47: você recupera esse valor no primeiro contrato",formato:"Carrossel",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"Kit R$47",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D27",titulo:"Diagnóstico gratuito: o que eu analiso no seu escritório em 30 minutos",formato:"Reel Falado",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+{id:"D28",titulo:"Se você ainda não tem onboarding, cada cliente novo é um recomeço do zero",formato:"Reel Curto",funil:"BOFU",pilar:"Autoridade",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-03-02",likes:114,comments:9,views:2883,reach:867,shares:1,saved:2,total_interactions:128,ig_post_id:"18050384057709474"},
+  {id:"D29",titulo:"Depoimento: 'Eu achava que IA era coisa de startup. Hoje uso no dia a dia'",formato:"Reel Falado",funil:"BOFU",pilar:"Prova Social",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"",serie:"",data:""},
+{id:"D30",titulo:"Antes e depois: escritório com e sem sistema Vértice",formato:"Carrossel",funil:"BOFU",pilar:"Prova Social",status:"Publicado",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:"2026-01-22",likes:14,comments:0,views:1458,reach:781,shares:6,saved:2,total_interactions:24,ig_post_id:"18561158707048336"},
+  {id:"D31",titulo:"Por que advogados em início de carreira têm mais vantagem em IA",formato:"Reel Falado",funil:"BOFU",pilar:"Doutrina",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"O advogado com 20 anos de mercado tem prestígio — mas também tem 20 anos de hábitos antigos.",serie:"",data:""},
+  {id:"D32",titulo:"Você perdeu clientes por demorar 24h para responder? Eu resolvo isso.",formato:"Reel Curto",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"S01",titulo:"Story: Explicando a engenharia do Boomerang — Operação Auxílio-Acidente",formato:"Stories",funil:"TOFU",pilar:"Bastidor",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Muita gente viu o boomerang que postei e não entendeu o tamanho do jogo. O que a gente está rodando nos bastidores com o Dr. Otávio é a Operação Auxílio-Acidente...",serie:"Sequência Otávio",data:""},
+  {id:"S02",titulo:"Story: A Queda do Status — Você não precisa começar por aqui",formato:"Stories",funil:"MOFU",pilar:"Bastidor",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Parece complexo? Porque é. Essa é uma estrutura avançada de sócio de growth operacional. Mas aqui está o ponto central: você não precisa começar por aqui.",serie:"Sequência Otávio",data:""},
+  {id:"S03",titulo:"Story: Demonstração — NotebookLM gerando ata de consulta em segundos",formato:"Stories",funil:"MOFU",pilar:"Autoridade",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Você grava a consulta no celular. Sobe o áudio aqui no NotebookLM. E em segundos a IA gera a ata estruturada, a lista de documentos e um rascunho da petição inicial.",serie:"Sequência Otávio",data:""},
+  {id:"S04",titulo:"Story: CTA — Caixa de Perguntas + Convite para Direct ('ECOSSISTEMA')",formato:"Stories",funil:"BOFU",pilar:"Oferta",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Já recebi algumas respostas na caixa de perguntas. Vou responder as principais ao vivo, mostrando como a IA resolve esse problema específico no seu escritório.",serie:"Sequência Otávio",data:""},
+  {id:"D33",titulo:"O que acontece quando você contrata a Vértice: semana 1, 2 e 4",formato:"Reel Falado",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D34",titulo:"FAQ: as 7 perguntas que todo advogado faz antes de contratar consultoria",formato:"Carrossel",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D35",titulo:"POV: Você comprou aquela IA jurídica por R$150 e ela errou o artigo da lei",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Curado",cta:"PRINCIPIUM™",obrig:false,legenda:"Plataformas fechadas são caixas-pretas. Elas alucinam porque não conhecem o seu método.",serie:"",data:""},
+  {id:"D36",titulo:"Você usa o Astrea? Então você tem um assistente de preenchimento de R$200/mês",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Curado",cta:"WhatsApp",obrig:false,legenda:"Softwares jurídicos legados são prisões burocráticas.",serie:"",data:""},
+  {id:"D37",titulo:"Como analisar processos de 500 páginas sem estourar limites de IA",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D38",titulo:"A matemática para trocar a instabilidade do êxito pela recorrência B2B",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"Kit R$47",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D39",titulo:"Como medimos a performance comercial de um escritório boutique",formato:"Reel Falado",funil:"BOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D40",titulo:"O 'Arsenal de IA' próprio da Vértice vs. Plataformas prontas",formato:"Carrossel",funil:"BOFU",pilar:"Autoridade",status:"Ideia",cta:"PRINCIPIUM™",obrig:false,legenda:"",serie:"",data:""},
+  {id:"D41",titulo:"POV: Você pagou R$150 naquela IA jurídica pronta e ela citou artigo revogado",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"A verdade dói: plataformas fechadas de IA de prateleira são caixas-pretas. Elas alucinam porque são generalistas e não conhecem o seu método jurídico. Para ter segurança, você precisa de um ecossistema próprio de IA contextualizado com suas próprias petições e teses. Comente 'DIAGNOSTICO' para analisarmos seu fluxo.",porque:"Porta 1: Inimigo. Combate direto às IAs genéricas de prateleira.",serie:"Doug",data:""},
+  {id:"D42",titulo:"ChatGPT inventou artigo de lei em peça real — e o juiz abriu prazo de esclarecimento",formato:"Reel Falado",funil:"MOFU",pilar:"Doutrina",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Isso não é hipótese. Isso já virou notícia em diversos tribunais do país. Advogados que usaram o ChatGPT sem base de dados contextualizada (RAG) protocolaram peças com jurisprudências que simplesmente não existem. Ferramentas genéricas alucinam porque não conhecem o seu histórico de teses. O caminho seguro é isolar as suas próprias peças anteriores como contexto exclusivo da IA. Comente 'DIAGNOSTICO' para analisarmos o fluxo do seu escritório.",porque:"Porta 2: Caso real de mercado (sem inventar). IA genérica gerando risco ético documentado.",serie:"Doug",data:""},
+  {id:"D43",titulo:"Advogado Júnior (R$3.000) vs. Robô Qualificador Vértice (R$200/mês)",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Aqui está a matemática bruta: treinar um advogado júnior para qualificar e triar leads no WhatsApp custa pelo menos R$3.000/mês + encargos. Um fluxo automatizado com IA de qualificação no WhatsApp custa R$200 de API e trabalha 24/7 sem errar o script. Comente 'DIAGNOSTICO' para ver a planilha comparativa de CMP.",porque:"Porta 3: Número. Prova matemática de ROI de automação comercial vs contratação operacional.",serie:"Doug",data:""},
+  {id:"D44",titulo:"Eu já caí na mentira de achar que o ChatGPT puro resolveria o gargalo dos meus clientes",formato:"Reel Falado",funil:"TOFU",pilar:"Bastidor",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"No começo, achei que era só dar um prompt esperto no ChatGPT. Quebrei a cara. Sem uma base contextualizada (RAG) ligando o arquivo de peças anteriores ao prompt, a IA gera textos mornos e genéricos. Hoje, a Vértice só implementa IAs com RAG. Comente 'DIAGNOSTICO' para entender a diferença.",porque:"Porta 4: Confissão. Leo assume um erro técnico antigo para gerar autoridade no mecanismo RAG.",serie:"Doug",data:""},
+  {id:"D45",titulo:"Por que treinar sua equipe em IA pode estar deixando seu escritório mais lento",formato:"Reel Curto",funil:"TOFU",pilar:"Doutrina",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Entregar o acesso do ChatGPT para o seu time sem um processo (SOP) travado é receita para o caos. Eles gastam mais tempo brigando com a tela do que trabalhando. O fluxo de IA precisa ser invisível e integrado na ferramenta que eles já usam. Comente 'DIAGNOSTICO' para ver como implementar.",porque:"Porta 5: Contraintuitivo. Quebra de padrão sobre treinamento operacional de IA.",serie:"Doug",data:""},
+  {id:"D46",titulo:"3 etapas para montar o seu Qualificador de Leads no WhatsApp",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Aqui está a receita de bolo: 1. Configure as palavras-chave no Manychat para abrir o fluxo. 2. Use prompts de qualificação focando em faturamento e área. 3. Integre com seu CRM para agendar apenas os qualificados na sua agenda. Quer o PDF do manual? Comente 'MANUAL' e eu te envio.",porque:"Porta 6: Passo a Passo. A entrega prática do método técnico comercial.",serie:"Doug",data:""},
+  {id:"D47",titulo:"Assistente Vértice redigindo uma contestação complexa em 45s com risco zero",formato:"Reel Curto",funil:"BOFU",pilar:"Prova Social",status:"Curado",cta:"WhatsApp",obrig:true,legenda:"Sem inventar leis, sem alucinar. Esse é o NotebookLM rodando integrado ao Claude com nossa pasta de peças vencedoras. O robô escreve a contestação respeitando a tese do escritório em menos de 1 minuto. Quer implementar isso? Comente 'DIAGNOSTICO'.",porque:"Porta 7: Demonstração. Gravação de tela mostrando a ferramenta rodando no bastidor.",serie:"Doug",data:""},
+  {id:"D48",titulo:"A ilusão do faturamento: Por que prefiro lucrar R$ 30k do que faturar R$ 100k",formato:"Reel Falado",funil:"TOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Você vê agências comemorando faturamento de 6 dígitos na internet, mas ninguém te mostra o print da conta corrente da Pessoa Física do dono. A verdade é que faturar R$ 100k com 15 funcionários, escritório caro e custos complexos te deixa com menos de R$ 10k de lucro limpo no bolso e um infarto agendado. No modelo Vértice, faturando R$ 42.000/mês com ferramentas de IA rodando o operacional e sem funcionários, você mantém 70% de margem. Comente 'PLANILHA' para analisarmos seu custo operacional.",porque:"Soberania e a matemática financeira de faturamento vs margem.",serie:"Doug",data:""},
+  {id:"D49",titulo:"Como estruturar uma esteira de R$ 50.000/mês sem vender a sua alma (e seu tempo)",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Se você só vende serviço 1x1 personalizado (DFY), seu faturamento bate no teto físico das suas horas de sono. Você virou escravo do próprio negócio. Você precisa de um ecossistema de mentorias focado em Acesso, não em informação: Nível 1: Individual High Ticket (R$ 10.000); Nível 2: Mentoria em Grupo (R$ 2.000 - R$ 3.000); Nível 3: Consultoria Rápida (R$ 2.000). Quer receber o desenho visual desta esteira de produtos adaptada à sua área jurídica? Comente 'ESTEIRA'.",porque:"Distribuição da esteira de produtos da Vértice.",serie:"Doug",data:""},
+  {id:"D50",titulo:"Por que o cliente paga R$ 10k na sua assessoria se existe a resposta de graça no Google",formato:"Reel Falado",funil:"TOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Se informação gerasse riqueza, todo mundo com acesso ao Google seria milionário. Quando um cliente te paga R$ 10.000 por uma assessoria ou mentoria premium, ele não está pagando pelas aulas gravadas ou por um PDF. Ele está pagando pela velocidade do resultado e pelo seu olhar cirúrgico sobre o problema. Informação é commodity. Contexto e acompanhamento são caros. Comente 'ACESSO' e conversamos.",porque:"Diferenciação por níveis de acesso ao invés de conteúdo.",serie:"Doug",data:""},
+  {id:"D51",titulo:"Sequência de Stories: Levantada de Mão para Assessoria Vértice",formato:"Stories",funil:"BOFU",pilar:"Prova Social",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Sequência de Stories estruturada em 3 passos: 1. Dor (advogados perdendo tempo formatando peças). 2. Tese + Enquete (escritórios de elite usando RAG seguro e robôs qualificadores). 3. CTA (vagas limitadas para Leo implementar pessoalmente o ecossistema com IA nos próximos 30 dias). Responda com 'DIAGNOSTICO'.",porque:"Funil Z4 de conversão direta na DM.",serie:"Doug",data:""},
+  {id:"D52",titulo:"Mesa Redonda: Engenharia de Prompts e RAG para Advogados Boutique (Reunião de R$100)",formato:"Carrossel",funil:"BOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Vou reunir apenas 8 advogados titulares em uma sala fechada do Zoom para estruturar ao vivo a pasta de contexto (RAG) da banca deles. Para evitar curiosos e garantir comprometimento, cobramos R$ 100 de entrada. Se quer uma das 8 cadeiras, envie 'MESA' no direct.",porque:"Motor de vendas baseado no workshop intimista de conversão.",serie:"Doug",data:""},
+  {id:"D53",titulo:"Sequência $$$$: Como Vender Kits e Workshops de R$ 100 a R$ 500 no Instagram",formato:"Stories",funil:"BOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Sequência prática em 4 etapas nos Stories: 1. Vender a ideia antes da oferta (história curta de micro-vitória e enquete). 2. Confirmar a intenção (prints de respostas e DMs gerando prova social). 3. Fazer a oferta (tópicos de entrega, preço de 24h e bônus de escassez). 4. Vender por 2 a 3 dias (remoção de objeções e novos prints).",porque:"Aceleração de ativos de pré-venda e injeção rápida de caixa.",serie:"Doug",data:""},
+  {id:"D54",titulo:"Como Criar um Ativo de Pré-venda/Infoproduto em apenas 2 Horas",formato:"Carrossel",funil:"MOFU",pilar:"Autoridade",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Não complique as coisas. Se você tem um método claro, você pode extrair temas específicos e criar minicursos, SOPs ou templates em 2 horas. Use a fórmula de unidade de comunicação: Pilar do seu método -> Problema específico -> Produto de consumo rápido. Comente 'CRIAR' para ver o prompt do ChatGPT para extração de temas.",porque:"Método de extração rápida de produtos baseados em pilares.",serie:"Doug",data:""},
+  {id:"D55",titulo:"Stories (Bastidor Real) — Story 1: Eu estava organizando o calendário editorial da Vértice",formato:"Stories",funil:"TOFU",pilar:"Bastidor",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Esses dias eu estava organizando o calendário editorial da Vértice. Eu precisava criar 50 ideias de conteúdo densas, mas estava frustrado com os textos genéricos que o ChatGPT devolvia quando eu dava prompts simples. O resultado não tinha o meu tom de voz, não tinha os dados do meu cofre. Era texto de estagiário.",porque:"Story 1 da sequência Rota A (bastidores reais). Apresenta o problema real sem inventar nada.",serie:"Doug",data:""},
+  {id:"D56",titulo:"Stories (Bastidor Real) — Story 2: IA sem contexto gera texto morno",formato:"Stories",funil:"TOFU",pilar:"Doutrina",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"O problema é que IAs sem base contextualizada são generalistas. Elas não conhecem o DNA da Vértice, não sabem quais clientes a gente atende, não conhecem a metodologia de RAG jurídico. Então geram textos que qualquer agência mediana produziria. Alucinam dados e perdem o fio da narrativa.",porque:"Story 2 da sequência Rota A. Amplifica o problema real sem fictício.",serie:"Doug",data:""},
+  {id:"D57",titulo:"Stories (Bastidor Real) — Story 3: Construí meu RAG próprio aqui na Vértice",formato:"Stories",funil:"MOFU",pilar:"Bastidor",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Para resolver isso aqui dentro, isolei toda a metodologia da Vértice — as notas do cofre, os frameworks de Doug, os dados de clientes — dentro de uma pasta de contexto no Claude. O SOP agora puxa apenas esse banco de dados antes de gerar qualquer conteúdo. Sem dados externos, sem invenção.",porque:"Story 3 da sequência Rota A. Mostra a vitória técnica real do laboratório da Vértice.",serie:"Doug",data:""},
+  {id:"D58",titulo:"Stories (Bastidor Real) — Story 4: 14 ideias de post em 2 minutos com o meu tom de voz",formato:"Stories",funil:"MOFU",pilar:"Prova Social",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"O resultado? Com o contexto travado, o assistente estruturou 14 ideias completas de posts com copies de vendas em menos de 2 minutos. Sem inventar dados, sem perder o tom assertivo da Vértice. Eu só revisei e aprovei. Isso é o que um arsenal de IA próprio faz: trabalha para você, não para o padrão genérico de mercado.",porque:"Story 4 da sequência Rota A. Demonstração de resultado real e verificável.",serie:"Doug",data:""},
+  {id:"D59",titulo:"Stories (Bastidor Real) — Story 5: Enquete de pré-venda Kit SOP Claude + RAG",formato:"Stories",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Estou organizando os prompts de sistema e o SOP exato de como eu configuro essa base contextualizada aqui na Vértice para entregar em um Kit Prático por R$ 147. Mas quero saber: você teria interesse em garantir o acesso na pré-venda por apenas R$ 100? [ ] Sim, manda o link | [ ] Quero ver o cronograma",porque:"Story 5 da sequência Rota A. Pergunta despretensiosa de levantada de mão para o Kit de entrada.",serie:"Doug",data:""},
+  {id:"D60",titulo:"Stories (Confirmação de Intenção) — Mostrando as respostas da enquete de ontem",formato:"Stories",funil:"BOFU",pilar:"Prova Social",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Ontem perguntei se vocês tinham interesse no Kit de configuração de RAG. Olha o volume de respostas que recebi... (mostrar print das DMs). Por causa disso, decidi que vou abrir a pré-venda hoje. Nos próximos Stories vou revelar o conteúdo completo.",porque:"Story de confirmação de intenção. Cria prova social real e aumenta a antecipação da oferta.",serie:"Doug",data:""},
+  {id:"D61",titulo:"Stories (Oferta) — Lançamento do Kit SOP Claude + RAG por R$ 100 nas próximas 24h",formato:"Stories",funil:"BOFU",pilar:"Oferta",status:"Ideia",cta:"WhatsApp",obrig:false,legenda:"Aqui está: Kit SOP Claude + RAG — O sistema exato que uso aqui na Vértice para configurar uma IA contextualizada com a base de dados do seu negócio. O que você recebe: SOP passo a passo em PDF (texto + prints de tela), prompt de sistema pronto para colar no Claude Projects, checklist de indexação segura dos seus arquivos. Preço oficial: R$ 147. Mas por 24h na pré-venda: R$ 100. Apenas para os primeiros 30. Envie 'KIT' no direct para garantir o link.",porque:"Story de oferta direta. Toda a sequência completa da campanha Rota A sem nenhum fictício.",serie:"Doug",data:""},
+{id:"B01",titulo:"Quem não passou por isso ainda tá vibecodando errado",formato:"Reel Curto",funil:"TOFU",pilar:"Expansão/Meme",status:"Publicado",cta:"Seguir",obrig:false,legenda:"quem n passou por isso ainda ta vibecodando errado",serie:"Vibecodando",data:"2026-06-23",likes:31,comments:0,views:894,reach:434,shares:1,saved:0,total_interactions:32,ig_post_id:"18070058879381433"},
+  {id:"B02",titulo:"Você vendo a IA resolver em minutos o que demoraria horas — depois de 5h configurando",formato:"Reel Curto",funil:"TOFU",pilar:"Expansão/Meme",status:"Publicado",cta:"Seguir",obrig:false,legenda:"",serie:"Vibecodando",data:""},
+];
+
+// ══════════ PIPELINE STAGES ══════════
+const PIPE_STAGES = [
+  {key:'Ideia', label:'Banco Frio', icon:`<svg style="width:14px;height:14px;stroke-width:2.5;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><path d="M9 21h6m-6-3h6m-9-6.5a6.5 6.5 0 1 1 12 0C18 14 15 15 15 18H9c0-3-3-4-3-6.5z"></path></svg>`, color:'#94A3B8'},
+  {key:'Curado', label:'Curado', icon:`<svg style="width:14px;height:14px;stroke-width:2.5;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`, color:'#10B981'},
+  {key:'Em Produção', label:'Em Produção', icon:`<svg style="width:14px;height:14px;stroke-width:2.5;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`, color:'#F59E0B'},
+  {key:'Reformular', label:'Reformular', icon:`<svg style="width:14px;height:14px;stroke-width:2.5;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>`, color:'#8B5CF6'},
+  {key:'Publicado', label:'Publicado', icon:`<svg style="width:14px;height:14px;stroke-width:2.5;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>`, color:'#6366F1'},
+];
+
+const STATUS_ORDER = ['Ideia','Curado','Em Produção','Publicado'];
+
+// ══════════ STATE ══════════
+let S = {
+  content:[],
+  editId:null,
+  weekOff:0,
+  calMonth:new Date().getMonth(),
+  calYear:new Date().getFullYear(),
+  acervoTab:'Curado',
+  theme: localStorage.getItem('vertice_theme') || 'light',
+  igCache: JSON.parse(localStorage.getItem('vertice_ig_cache')) || { profile: {}, insights_30d: {}, posts: [], daily_insights: [] },
+  igOfflineFallback: false
+};
+
+// ══════════ INIT ══════════
+async function init(){
+  document.documentElement.setAttribute('data-theme', S.theme);
+  updateThemeBtn();
+
+  const saved = localStorage.getItem('vertice_v3');
+  S.content = saved ? JSON.parse(saved) : INIT.map(c=>({...c,_ts:Date.now()}));
+  
+  // Tenta carregar do backend local
+  try {
+    const res = await fetch('http://localhost:5000/api/ideas');
+    if (res.ok) {
+      const serverIdeas = await res.json();
+      if (serverIdeas && serverIdeas.length > 0) {
+        S.content = serverIdeas;
+        localStorage.setItem('vertice_v3', JSON.stringify(S.content));
+        console.log("Ideias carregadas do backend local.");
+      } else {
+        // Se o backend retornar vazio, envia as ideias locais/INIT para povoar o backend
+        fetch('http://localhost:5000/api/ideas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(S.content)
+        }).catch(e => console.log("Erro ao inicializar ideias no backend"));
+      }
+    }
+  } catch (e) {
+    console.log("Backend offline para carregar ideias. Usando cache local.");
+  }
+
+  // Merge missing items from INIT (so that code-level changes to INIT automatically sync to existing localStorage)
+  const existingIds = new Set(S.content.map(c => c.id));
+  let hasNew = false;
+  INIT.forEach(item => {
+    if (!existingIds.has(item.id)) {
+      S.content.push({...item, _ts: Date.now()});
+      hasNew = true;
+    }
+  });
+  if (hasNew) {
+    persist();
+  }
+
+  // Sincroniza mapeamentos de posts com ideias no início usando o cache do navegador
+  syncMatchedIdeas();
+
+  updateWeekBadge();
+  updateBadges();
+  renderDashboard();
+  updateAcervoTabCounts();
+  renderDashboardInstagram();
+
+  // Sincroniza cache do Instagram com o backend local se estiver ativo no início
+  fetch('http://localhost:5000/api/metrics')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(data && data.profile && data.profile.username) {
+        S.igCache = data;
+        localStorage.setItem('vertice_ig_cache', JSON.stringify(S.igCache));
+        
+        // Sincroniza novamente se o backend tiver dados mais recentes
+        syncMatchedIdeas();
+        
+        renderDashboardInstagram();
+        const metricsGrid = document.getElementById('metrics-grid');
+        if(metricsGrid && metricsGrid.innerHTML && document.getElementById('view-metricas').classList.contains('active')) {
+          renderMetricas();
+        }
+      }
+    })
+    .catch(e => console.log('Backend local offline na inicialização. Usando cache local do navegador.'));
+}
+
+
+function persist(){
+  localStorage.setItem('vertice_v3', JSON.stringify(S.content));
+  // Salva no backend se ativo
+  fetch('http://localhost:5000/api/ideas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(S.content)
+  }).catch(e => console.log('Backend local offline para salvar ideias.'));
+
+  updateBadges();
+  updateAcervoTabCounts();
+  
+  const activeView = document.querySelector('.view.active');
+  if (activeView) {
+    const id = activeView.id.replace('view-', '');
+    const renders = {
+      acervo: renderAcervo,
+      producao: renderProducao,
+      pipeline: renderPipeline,
+      calendario: renderCalendar,
+      metricas: renderMetricas,
+      dashboard: renderDashboard
+    };
+    if (renders[id]) renders[id]();
+  }
+}
+
+function persistIgCache(){
+  localStorage.setItem('vertice_ig_cache', JSON.stringify(S.igCache));
+  // Enviar para o backend se ativo
+  fetch('http://localhost:5000/api/metrics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(S.igCache)
+  }).catch(e => console.log('Backend local offline. Rodando com cache local.'));
+}
+
+// ══════════ THEME ══════════
+function toggleTheme(){
+  S.theme = S.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', S.theme);
+  localStorage.setItem('vertice_theme', S.theme);
+  updateThemeBtn();
+  if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+}
+function updateThemeBtn(){
+  const btn = document.getElementById('theme-toggle-btn');
+  btn.textContent = S.theme === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+
+// ══════════ UTILS ══════════
+function isoDate(d){ return d.toISOString().split('T')[0]; }
+function today(){ return isoDate(new Date()); }
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T12:00:00'); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); }
+
+function getWeekDays(off=0){
+  const now=new Date(), day=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(day===0?6:day-1)+off*7);
+  mon.setHours(0,0,0,0);
+  return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+}
+
+function genId(){
+  const ids=S.content.map(c=>c.id);
+  let n=S.content.length+1, id;
+  do{ id='N'+String(n).padStart(2,'0'); n++; }while(ids.includes(id));
+  return id;
+}
+
+function pillClass(st){
+  return {Curado:'pill-curado','Em Produção':'pill-prod',Publicado:'pill-pub',Ideia:'pill-ideia',Pausado:'pill-pausado',Reformular:'pill-ideia',Sobra:'pill-ideia'}[st]||'pill-ideia';
+}
+function tagClass(fmt){
+  if(fmt.includes('Carrossel')) return 'tag-carrossel';
+  if(fmt.includes('Stories')) return 'tag-stories';
+  if(fmt.includes('Post')) return 'tag-post';
+  return 'tag-reel';
+}
+function funilClass(f){ return {'TOFU':'tag-tofu','MOFU':'tag-mofu','BOFU':'tag-bofu'}[f]||'tag-tofu'; }
+
+function toast(msg){
+  const el=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+function updateWeekBadge(){
+  const days=getWeekDays(0);
+  document.getElementById('wb-range').textContent=fmtDate(isoDate(days[0]))+' – '+fmtDate(isoDate(days[6]));
+}
+
+function updateBadges(){
+  document.getElementById('nb-acervo').textContent=S.content.length;
+  document.getElementById('nb-producao').textContent=S.content.filter(c=>c.status==='Em Produção').length;
+  document.getElementById('s-total').textContent=S.content.length;
+  document.getElementById('s-curado').textContent=S.content.filter(c=>c.status==='Curado').length;
+  document.getElementById('s-producao').textContent=S.content.filter(c=>c.status==='Em Produção').length;
+  document.getElementById('s-publicado').textContent=S.content.filter(c=>c.status==='Publicado').length;
+}
+
+function updateAcervoTabCounts(){
+  const map={Curado:0,Ideia:0,Reformular:0,Sobra:0,Publicado:0};
+  S.content.forEach(c=>{ if(map[c.status]!==undefined) map[c.status]++; });
+  document.getElementById('tc-curado').textContent=map.Curado;
+  document.getElementById('tc-ideia').textContent=map.Ideia;
+  document.getElementById('tc-reformular').textContent=map.Reformular;
+  document.getElementById('tc-sobra').textContent=map.Sobra;
+  document.getElementById('tc-publicado').textContent=map.Publicado;
+}
+
+// ══════════ NAV ══════════
+const VIEW_INFO={
+  dashboard:['Dashboard','Visão geral da semana editorial'],
+  acervo:['Acervo de Temas','Banco completo de ideias qualificadas'],
+  producao:['Produção da Semana','Organize e agende os conteúdos por dia'],
+  pipeline:['Pipeline de Produção','Fluxo de status de cada conteúdo'],
+  calendario:['Calendário Editorial','Visualização mensal dos agendamentos'],
+  metricas:['Métricas','Distribuição por pilares, formatos e funil'],
+  stories:['Stories de Vendas','Sequências prontas e roteiros da caixa de perguntas']
+};
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  const[t,s]=VIEW_INFO[name];
+  document.getElementById('tb-title').textContent=t;
+  document.getElementById('tb-sub').textContent=s;
+  const renders={acervo:renderAcervo,producao:renderProducao,pipeline:renderPipeline,calendario:renderCalendar,metricas:renderMetricas};
+  if(renders[name]) renders[name]();
+}
+
+// ══════════ DASHBOARD ══════════
+const PILAR_COLORS=['#B89047','#3B82F6','#10B981','#8B5CF6','#EF4444','#EC4899'];
+
+function renderDashboard(){
+  updateBadges();
+
+  // Donut
+  const pillarMap={};
+  S.content.forEach(c=>{ pillarMap[c.pilar]=(pillarMap[c.pilar]||0)+1; });
+  const entries=Object.entries(pillarMap).sort((a,b)=>b[1]-a[1]);
+  const total=entries.reduce((s,[,v])=>s+v,0)||1;
+  const canvas=document.getElementById('donut-canvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,110,110);
+  let angle=-Math.PI/2;
+  entries.forEach(([k,v],i)=>{
+    const slice=(v/total)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(55,55);
+    ctx.arc(55,55,48,angle,angle+slice);
+    ctx.closePath(); ctx.fillStyle=PILAR_COLORS[i%PILAR_COLORS.length];
+    ctx.fill(); angle+=slice;
+  });
+  // hole
+  ctx.beginPath(); ctx.arc(55,55,28,0,Math.PI*2);
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim()||'#fff';
+  ctx.fill();
+
+  document.getElementById('donut-legend').innerHTML=entries.map(([k,v],i)=>`
+    <div class="dl-item">
+      <div class="dl-dot" style="background:${PILAR_COLORS[i%PILAR_COLORS.length]}"></div>
+      <span>${k}</span>
+      <span class="dl-count">${v}</span>
+    </div>`).join('');
+
+  // Semana mini
+  const days=getWeekDays(0);
+  const DAY=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const todayIso=today();
+  let miniHtml='';
+  [1,2,3,4,5,6,0].forEach(di=>{
+    const d=days[di], iso=isoDate(d);
+    const items=S.content.filter(c=>c.data===iso);
+    const isT=iso===todayIso;
+    miniHtml+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <div style="width:28px;font-size:10px;font-weight:700;color:${isT?'var(--gold)':'var(--text-muted)'};">${DAY[d.getDay()]}</div>
+      <div style="width:32px;font-size:11px;font-weight:600;color:var(--text-muted);">${fmtDate(iso)}</div>
+      ${items.length===0
+        ? `<div style="font-size:11px;color:var(--border);font-style:italic;">— vazio</div>`
+        : items.map(c=>`<span class="pill ${pillClass(c.status)}" style="cursor:pointer" onclick="openDetail('${c.id}')">${c.id}: ${c.titulo.slice(0,30)}…</span>`).join('')}
+    </div>`;
+  });
+  document.getElementById('dash-week-mini').innerHTML=miniHtml||'<div class="empty"><div>Nenhum conteúdo agendado</div></div>';
+
+  // Recentes
+  const recent=[...S.content].sort((a,b)=>(b._ts||0)-(a._ts||0)).slice(0,5);
+  document.getElementById('dash-recent').innerHTML=recent.map(renderCard).join('')||'<div class="empty"><div class="e-icon"><svg style="width:24px;height:24px;margin:0 auto 8px;opacity:0.4;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="e-msg">Adicione conteúdos no Acervo</div></div>';
+
+  renderDashboardInstagram();
+}
+
+// ══════════ CARD HTML ══════════
+function renderCard(c){
+  const hasStrategy = !!c.porque;
+  const hasScript = !!c.roteiro;
+  const slidesCount = c.slides ? c.slides.split(/---+/g).filter(s=>s.trim()).length : 0;
+  const serieLabel = c.serie ? (c.serie==='Doug' ? '📚 Doug' : c.serie) : '';
+  return `<div class="content-card" onclick="openDetail('${c.id}')">
+    <div class="cc-code">${c.id}</div>
+    <span class="pill ${pillClass(c.status)}">${c.status==='Ideia'?'Banco Frio':c.status}</span>
+    <div class="cc-title">${c.titulo}</div>
+    <div class="cc-meta">
+      ${c.obrig?'<span class="badge-obrig">obrig.</span>':''}
+      <span class="tag ${tagClass(c.formato)}">${c.formato.split(' ')[0]}</span>
+      <span class="tag ${funilClass(c.funil)}">${c.funil}</span>
+      ${serieLabel ? `<span class="tag" style="border:1px solid rgba(250,204,21,.4);color:var(--gold);background:rgba(250,204,21,.07);font-weight:700;">${serieLabel}</span>` : ''}
+      ${hasStrategy ? `<span class="tag" style="border:1px dashed var(--gold);color:var(--gold);background:none;" title="Estratégia definida">Estratégia</span>` : ''}
+      ${hasScript ? `<span class="tag" style="border:1px dashed var(--border);color:var(--text);background:none;" title="Roteiro definido">Roteiro</span>` : ''}
+      ${slidesCount > 0 ? `<span class="tag" style="border:1px dashed var(--border);color:var(--text);background:none;" title="${slidesCount} slides">${slidesCount} slides</span>` : ''}
+      ${c.data?`<span style="font-size:10px;color:var(--text-muted);">${fmtDate(c.data)}</span>`:''}
+    </div>
+  </div>`;
+}
+
+// ══════════ ACERVO ══════════
+function setAcervoTab(tab, el){
+  S.acervoTab=tab;
+  document.querySelectorAll('.acervo-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('search-acervo').value='';
+  renderAcervo();
+}
+
+function renderAcervo(){
+  const tab=S.acervoTab;
+  const search=document.getElementById('search-acervo').value.toLowerCase();
+  const funil=document.getElementById('filter-funil').value;
+  const fmt=document.getElementById('filter-formato').value;
+  const serieFilter=document.getElementById('filter-serie')?document.getElementById('filter-serie').value:'';
+
+  let items=S.content.filter(c=>c.status===tab);
+  if(search) items=items.filter(c=>c.titulo.toLowerCase().includes(search)||c.serie.toLowerCase().includes(search));
+  if(funil) items=items.filter(c=>c.funil===funil);
+  if(fmt) items=items.filter(c=>c.formato===fmt);
+  if(serieFilter) items=items.filter(c=>(c.serie||'')===serieFilter);
+
+  const el=document.getElementById('acervo-list');
+  el.innerHTML=items.length===0
+    ?'<div class="empty"><div class="e-icon"><svg style="width:24px;height:24px;margin:0 auto 8px;opacity:0.4;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="e-msg">Nenhum conteúdo nesta aba</div></div>'
+    :items.map(renderCard).join('');
+}
+
+function quickAdd(){
+  const t=document.getElementById('qa-titulo').value.trim();
+  if(!t) return;
+  S.content.unshift({id:genId(),titulo:t,formato:document.getElementById('qa-formato').value,funil:document.getElementById('qa-funil').value,pilar:'Bastidor',status:'Ideia',cta:'WhatsApp',obrig:false,legenda:'',serie:'',data:'',_ts:Date.now()});
+  persist(); renderAcervo(); renderDashboard();
+  document.getElementById('qa-titulo').value='';
+  toast('Ideia adicionada no Banco Frio!');
+}
+
+// ══════════ PRODUÇÃO DA SEMANA ══════════
+const DAY_NAMES=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function renderProducao(){
+  const days=getWeekDays(S.weekOff);
+  const todayIso=today();
+  const ws=isoDate(days[0]), we=isoDate(days[6]);
+  const inProd=S.content.filter(c=>c.status==='Em Produção');
+  const weekItems=S.content.filter(c=>c.data>=ws&&c.data<=we);
+  const semStandby=inProd.filter(c=>!c.data||c.data<ws||c.data>we);
+  const publicadosSemana=S.content.filter(c=>c.status==='Publicado'&&c.data>=ws&&c.data<=we);
+  const cortados=S.content.filter(c=>c.status==='Pausado'&&c.data>=ws&&c.data<=we).length;
+
+  document.getElementById('prod-week-label').textContent=
+    S.weekOff===0?`Esta semana  (${fmtDate(ws)} – ${fmtDate(we)})`:`Semana de ${fmtDate(ws)} a ${fmtDate(we)}`;
+
+  // ── Stats Bar (PQV-style) ──
+  document.getElementById('prod-stats-bar').innerHTML=`
+    <div class="psb-stat"><strong>${inProd.length}</strong> em produção</div>
+    <div class="psb-sep">·</div>
+    <div class="psb-stat"><strong>${semStandby.length}</strong> standby</div>
+    <div class="psb-sep">·</div>
+    <div class="psb-stat"><strong>${cortados}</strong> cortados</div>
+    <div class="psb-sep">·</div>
+    <div class="psb-stat"><strong>${publicadosSemana.length}</strong> publicados</div>
+    <div class="psb-goal">🎯 meta: ${weekItems.length}/7 agendados</div>
+  `;
+
+  // ── Chips atrair / construir / converter ──
+  const atrair=inProd.filter(c=>c.funil==='TOFU').length;
+  const construir=inProd.filter(c=>c.funil==='MOFU').length;
+  const converter=inProd.filter(c=>c.funil==='BOFU').length;
+  document.getElementById('prod-cats').innerHTML=`
+    <span class="cat-chip active">Todos <span class="cc-num">${inProd.length}</span></span>
+    <span class="cat-chip">Atrair (TOFU) <span class="cc-num">${atrair}</span></span>
+    <span class="cat-chip">Construir (MOFU) <span class="cc-num">${construir}</span></span>
+    <span class="cat-chip">Converter (BOFU) <span class="cc-num">${converter}</span></span>
+    <div class="prod-actions">
+      <button class="btn btn-ghost btn-sm" onclick="sugerirDatas()">Sugerir datas (~1/dia)</button>
+      <button class="btn btn-ghost btn-sm" onclick="limparDatas()">Limpar datas</button>
+    </div>
+  `;
+
+  // ── Grid semanal ──
+  const grid=document.getElementById('week-grid');
+  const ORDER=[1,2,3,4,5,6,0];
+  grid.innerHTML=ORDER.map(di=>{
+    const d=days[di], iso=isoDate(d);
+    const isT=iso===todayIso;
+    const items=S.content.filter(c=>c.data===iso);
+    return `<div class="week-col${isT?' today-col':''}">
+      <div class="week-col-header">
+        <div class="wch-day">${DAY_NAMES[d.getDay()]}</div>
+        <div class="wch-date">${d.getDate()}</div>
+      </div>
+      <div class="week-col-body">
+        ${items.map(c=>`
+          <div class="week-card" onclick="openDetail('${c.id}')">
+            <div class="wk-code">${c.id} ${c.obrig?'<span class="badge-obrig" style="font-size:8px;">obrig.</span>':''}</div>
+            <div class="wk-title">${c.titulo.slice(0,52)}${c.titulo.length>52?'…':''}</div>
+            <div class="wk-tags">
+              <span class="tag ${tagClass(c.formato)}" style="font-size:8px;">${c.formato.split(' ')[0]}</span>
+              <span class="tag ${funilClass(c.funil)}" style="font-size:8px;">${c.funil}</span>
+            </div>
+          </div>`).join('')}
+        <button class="week-add-btn" onclick="openAddForDate('${iso}')">+ agendar</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Lista em produção — atribua data ──
+  const listItems=inProd;
+  document.getElementById('prod-list-header').innerHTML=`
+    Em Produção — atribua a data
+    <span style="font-size:10px;font-weight:400;color:var(--text-muted);margin-left:6px;">(${listItems.length} conteúdos)</span>
+  `;
+  document.getElementById('prod-list').innerHTML=listItems.length===0
+    ?'<div class="empty" style="padding:16px"><div class="e-msg">Nenhum conteúdo em produção.</div></div>'
+    :listItems.map(c=>{
+      const hasDate=c.data>=ws&&c.data<=we;
+      return `
+      <div class="prod-list-item" onclick="openDetail('${c.id}')" style="${hasDate?'border-left:3px solid var(--gold);':''}">
+        <div class="pli-code">${c.id}</div>
+        ${c.obrig?'<span class="badge-obrig">obrig.</span>':''}
+        <div class="pli-title">${c.titulo}</div>
+        <div class="cc-meta">
+          <span class="tag ${tagClass(c.formato)}">${c.formato.split(' ')[0]}</span>
+          <span class="tag ${funilClass(c.funil)}">${c.funil}</span>
+          ${hasDate?`<span style="font-size:10px;color:var(--gold);font-weight:700;">📅 ${fmtDate(c.data)}</span>`:''}
+        </div>
+        <input type="date" class="date-picker-inline" value="${c.data||''}" onclick="event.stopPropagation()"
+          onchange="setDate('${c.id}',this.value)" title="Atribuir data">
+      </div>`;
+    }).join('');
+}
+
+function setDate(id, val){
+  const c=S.content.find(x=>x.id===id);
+  if(c){ c.data=val; persist(); renderProducao(); toast(`${id} agendado para ${fmtDate(val)}`); }
+}
+
+function navWeek(d){
+  S.weekOff=d===0?0:S.weekOff+d;
+  renderProducao();
+}
+
+function openAddForDate(iso){
+  openAdd(); setTimeout(()=>{ document.getElementById('f-data').value=iso; },60);
+}
+
+function sugerirDatas(){
+  const days=getWeekDays(S.weekOff);
+  const todayIso=today();
+  const inProd=S.content.filter(c=>c.status==='Em Produção'&&(!c.data||c.data<todayIso));
+  const ORDER=[1,2,3,4,5,6,0];
+  let dayIdx=0;
+  inProd.forEach(c=>{
+    while(dayIdx<ORDER.length){
+      const d=days[ORDER[dayIdx]];
+      const iso=isoDate(d);
+      if(iso>=todayIso){ c.data=iso; dayIdx++; break; }
+      dayIdx++;
+    }
+  });
+  persist(); renderProducao();
+  toast('Datas distribuídas automaticamente!');
+}
+
+function limparDatas(){
+  if(!confirm('Limpar todas as datas desta semana?')) return;
+  const days=getWeekDays(S.weekOff);
+  const ws=isoDate(days[0]), we=isoDate(days[6]);
+  S.content.forEach(c=>{ if(c.data>=ws&&c.data<=we) c.data=''; });
+  persist(); renderProducao();
+  toast('Datas limpas!');
+}
+
+// ══════════ PIPELINE ══════════
+let dragId=null;
+
+function renderPipeline(){
+  const grid=document.getElementById('pipeline-grid');
+  grid.innerHTML=PIPE_STAGES.map(st=>{
+    const items=S.content.filter(c=>c.status===st.key);
+    const nextStage=PIPE_STAGES[PIPE_STAGES.indexOf(st)+1];
+    const bodyId='pipebody_'+st.key.replace(/[\s\/]/g,'_');
+    return `<div class="pipe-col">
+      <div class="pipe-col-header">
+        <div class="pch-title"><span style="color:${st.color}">${st.icon}</span> ${st.label}</div>
+        <span class="pch-count">${items.length}</span>
+      </div>
+      <div class="pipe-col-body" id="${bodyId}"
+        ondragover="event.preventDefault();this.classList.add('drag-over');"
+        ondragleave="this.classList.remove('drag-over');"
+        ondrop="event.preventDefault();this.classList.remove('drag-over');dropCard('${st.key}');">
+        ${items.length===0
+          ?'<div style="padding:20px;text-align:center;font-size:11px;color:var(--text-muted);">Arraste um card aqui</div>'
+          :items.map(c=>{
+            const hasStrategy = !!c.porque;
+            const hasScript = !!c.roteiro;
+            const slidesCount = c.slides ? c.slides.split(/---+/g).filter(s=>s.trim()).length : 0;
+            return `
+            <div class="pipe-card" draggable="true" ondragstart="dragCard(event, '${c.id}')" onclick="openDetail('${c.id}')">
+              <div class="pc-code">${c.id}</div>
+              <div class="pc-title">${c.titulo.slice(0,65)}${c.titulo.length>65?'…':''}</div>
+              <div class="pc-tags">
+                <span class="tag ${tagClass(c.formato)}">${c.formato.split(' ')[0]}</span>
+                <span class="tag ${funilClass(c.funil)}">${c.funil}</span>
+                ${c.obrig?'<span class="badge-obrig">obrig.</span>':''}
+                ${nextStage?`<button class="pipe-move-btn" onclick="event.stopPropagation();moveStage('${c.id}','${nextStage.key}')">→ ${nextStage.label}</button>`:''}
+              </div>
+              ${(hasStrategy || hasScript || slidesCount > 0) ? `
+              <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+                ${hasStrategy ? `<span style="font-size:9px;color:var(--gold);border:1px solid rgba(212,175,55,0.3);padding:1px 4px;border-radius:3px;background:rgba(212,175,55,0.05);" title="Estratégia definida">Estratégia</span>` : ''}
+                ${hasScript ? `<span style="font-size:9px;color:var(--text-muted);border:1px solid var(--border);padding:1px 4px;border-radius:3px;background:var(--bg-card);" title="Roteiro definido">Roteiro</span>` : ''}
+                ${slidesCount > 0 ? `<span style="font-size:9px;color:var(--text-muted);border:1px solid var(--border);padding:1px 4px;border-radius:3px;background:var(--bg-card);" title="${slidesCount} slides">${slidesCount} slides</span>` : ''}
+              </div>
+              ` : ''}
+            </div>`;
+          }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function moveStage(id, newStatus){
+  const c=S.content.find(x=>x.id===id);
+  if(c){ c.status=newStatus; persist(); renderPipeline(); toast(`${id} → ${newStatus}`); }
+}
+
+function dragCard(ev, id){
+  dragId=id;
+  ev.dataTransfer.setData('text/plain', id);
+}
+
+function dropCard(newStatus){
+  if(!dragId) return;
+  const c=S.content.find(x=>x.id===dragId);
+  if(c){
+    c.status=newStatus;
+    persist();
+    renderPipeline();
+    toast(`${dragId} → ${newStatus}`);
+  }
+  dragId=null;
+}
+
+
+// ══════════ CALENDÁRIO ══════════
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function renderCalendar(){
+  const m=S.calMonth, y=S.calYear;
+  document.getElementById('cal-label').textContent=MONTHS[m]+' '+y;
+  const todayIso=today();
+  const first=new Date(y,m,1).getDay();
+  const daysInM=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+
+  let html=''; let count=0;
+  for(let i=first-1;i>=0;i--){
+    const d=prevDays-i;
+    const pm=m===0?11:m-1, py=m===0?y-1:y;
+    const iso=`${py}-${String(pm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html+=calCell(d,iso,true,todayIso); count++;
+  }
+  for(let d=1;d<=daysInM;d++){
+    const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html+=calCell(d,iso,false,todayIso); count++;
+  }
+  let nd=1;
+  while(count%7!==0){
+    const nm=m===11?0:m+1, ny=m===11?y+1:y;
+    const iso=`${ny}-${String(nm+1).padStart(2,'0')}-${String(nd).padStart(2,'0')}`;
+    html+=calCell(nd,iso,true,todayIso); nd++; count++;
+  }
+  document.getElementById('cal-body').innerHTML=html;
+}
+
+function calCell(day,iso,other,todayIso){
+  const items=S.content.filter(c=>c.data===iso);
+  const isT=iso===todayIso;
+  return `<div class="cal-cell${other?' cal-other':''}${isT?' cal-today':''}" onclick="openAddForDate('${iso}')">
+    <div class="cal-num">${day}</div>
+    ${items.slice(0,3).map(c=>`<div class="cal-item" onclick="event.stopPropagation();openDetail('${c.id}')" title="${c.titulo}">${c.id} ${c.titulo.slice(0,18)}…</div>`).join('')}
+    ${items.length>3?`<div style="font-size:9px;color:var(--text-muted);padding:1px 4px;">+${items.length-3} mais</div>`:''}
+  </div>`;
+}
+
+function navMonth(d){
+  if(d===0){ const n=new Date(); S.calMonth=n.getMonth(); S.calYear=n.getFullYear(); }
+  else{ S.calMonth+=d; if(S.calMonth>11){S.calMonth=0;S.calYear++;} if(S.calMonth<0){S.calMonth=11;S.calYear--;} }
+  renderCalendar();
+}
+
+// ══════════ MÉTRICAS ══════════
+const COLORS=['#B89047','#3B82F6','#10B981','#8B5CF6','#EF4444','#EC4899','#F97316','#14B8A6'];
+
+const IG_ACCESS_TOKEN = "EAAUcCJJeKl4BR0X1ies8HLTxRybrFQo8nLkHSj8HBn0ycxqhATxQ6qOhELNhTr0dIp3dZAlcblAhe1M8yup4NedyDrjZAIVDaJXlmVAhZALdSN0Il1ZAZCD14YOV2rsUjaYZBj6IHudLR36iPK9wsW3YttVPbVJ4VtxFsKb5EQHbfDaZCZCmZAdrTvmrUX33Vcnp5R5ZA5QjjkkbxDWa0YJITHZCZBrntdZCfbhKDbTxjwEcLsSbWIdFeUcYZBXyjJUJi57x3HdgPc876FPIXS0mlUCFKICvjLKPeZCv1SZCW0WlxW73rDXwkQYmRGWPOvcr1RwOOqvIqMaf354YNepTlgZDZD";
+const IG_BUSINESS_ID = "17841401150883581";
+
+// ══════════ SVG ICONS SYSTEM ══════════
+const ICONS = {
+  reels: `<svg style="width:14px;height:14px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>`,
+  carousel: `<svg style="width:14px;height:14px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><rect x="5" y="5" width="16" height="16" rx="2"></rect><path d="M19 1v2H3v16H1"></path></svg>`,
+  photo: `<svg style="width:14px;height:14px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`,
+  heart: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
+  comment: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`,
+  eye: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+  reach: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+  share: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`,
+  save: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`,
+  fire: `<svg style="width:12px;height:12px;stroke-width:2;stroke:currentColor;fill:none;vertical-align:middle;margin-right:3px;" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>`
+};
+
+async function safeFetchJson(url) {
+  try {
+    const res = await fetch(url);
+    if(res.ok) return await res.json();
+    console.error('Fetch error for: ' + url, res.statusText);
+  } catch(e) {
+    console.error('Network error for: ' + url, e);
+  }
+  return null;
+}
+
+function drawProgressRings(canvasId, values) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,120,120);
+  
+  const metaViews = Math.max(values.views * 1.25, 1000);
+  const metaReach = Math.max(values.reach * 1.25, 500);
+  const metaFollowers = Math.max(values.followers * 1.25, 10);
+
+  const rings = [
+    { val: values.views, max: metaViews, color: '#D4AF37', r: 50, w: 8 },      // Gold para Views
+    { val: values.reach, max: metaReach, color: '#E1306C', r: 38, w: 8 },      // Pink para Alcance
+    { val: values.followers, max: metaFollowers, color: '#405DE6', r: 26, w: 8 } // Blue para Seguidores
+  ];
+  
+  rings.forEach(ring => {
+    // Fundo cinza do anel
+    ctx.beginPath();
+    ctx.arc(60, 60, ring.r, 0, Math.PI * 2);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e5e7eb';
+    ctx.lineWidth = ring.w - 2;
+    ctx.stroke();
+    
+    // Progresso do anel
+    const pct = ring.max === 0 ? 0 : Math.min(Math.max(ring.val / ring.max, 0.05), 1);
+    ctx.beginPath();
+    ctx.arc(60, 60, ring.r, -Math.PI / 2, -Math.PI / 2 + (pct * Math.PI * 2));
+    ctx.strokeStyle = ring.color;
+    ctx.lineWidth = ring.w;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  });
+}
+
+function renderDashboardInstagram() {
+  const container = document.getElementById('dash-ig-summary');
+  const contentEl = document.getElementById('dash-ig-content');
+  if(!container || !contentEl) return;
+
+  const profile = S.igCache.profile || {};
+  const insights = S.igCache.insights_30d || {};
+  
+  const totalHistFollowers = (S.igCache.daily_insights || []).reduce((sum, d) => sum + (d.followers || 0), 0);
+  const totalHistReach = (S.igCache.daily_insights || []).reduce((sum, d) => sum + (d.reach || 0), 0);
+
+  if(profile && profile.username) {
+    container.style.display = 'block';
+    
+    const finalReach = insights.reach || 0;
+    const reachChange = insights.reachChange || 0;
+    const finalViews = insights.views || 0;
+    const viewsChange = insights.viewsChange || 0;
+    const finalEngaged = insights.engaged || 0;
+    const engagedChange = insights.engagedChange || 0;
+    const finalFollowers = insights.followers || 0;
+    const followersChange = insights.followersChange || 0;
+
+    const badgeChange = (val) => {
+      if(val > 0) return `<span style="color:#10B981; font-weight:700; font-size:10px;">▲ +${val}%</span>`;
+      if(val < 0) return `<span style="color:#EF4444; font-weight:700; font-size:10px;">▼ ${val}%</span>`;
+      return `<span style="color:var(--text-muted); font-size:10px;">— 0%</span>`;
+    };
+
+    let warningBanner = '';
+    if (S.igOfflineFallback) {
+      warningBanner = `
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:var(--radius-sm); padding:6px 10px; font-size:10px; color:#ef4444; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; width:100%; border-left:3px solid #ef4444; box-sizing:border-box;">
+          <span>⚠️ Sincronização offline (token expirado). Exibindo cache.</span>
+          <span style="font-weight:700; text-decoration:underline; cursor:pointer;" onclick="showView('metricas'); setTimeout(openTokenModal, 100);">Atualizar</span>
+        </div>
+      `;
+    }
+
+    contentEl.innerHTML = `
+      ${warningBanner}
+      <div style="display:grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: center; flex-wrap: wrap;">
+        <!-- Coluna 1: Círculos Concêntricos -->
+        <div style="position:relative; width:120px; height:120px; margin: 0 auto;">
+          <canvas id="ig-rings-canvas" width="120" height="120"></canvas>
+          <div style="position:absolute; top:0; left:0; width:120px; height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none;">
+            <span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">Instagram</span>
+          </div>
+        </div>
+
+        <!-- Coluna 2: Detalhes das Métricas (30 dias) -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+          
+          <div style="padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
+            <div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px;">Views Perfil (30d)</div>
+            <div style="font-size:14px; font-weight:800; color:var(--text); margin-top:2px; display:flex; align-items:center; gap:6px; justify-content:space-between;">
+              <span>${finalViews.toLocaleString()}</span>
+              ${badgeChange(viewsChange)}
+            </div>
+          </div>
+
+          <div style="padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px;">Alcance (30d)</div>
+              <div style="font-size:14px; font-weight:800; color:var(--text); margin-top:2px; display:flex; align-items:center; gap:6px; justify-content:space-between;">
+                <span>${finalReach.toLocaleString()}</span>
+                ${badgeChange(reachChange)}
+              </div>
+            </div>
+            <div style="font-size:8px; color:var(--text-muted); border-top:1px dashed var(--border); padding-top:4px; margin-top:4px;">
+              Total Histórico: <strong>${totalHistReach.toLocaleString()}</strong>
+            </div>
+          </div>
+
+          <div style="padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
+            <div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px;">Contas Engajadas</div>
+            <div style="font-size:14px; font-weight:800; color:var(--text); margin-top:2px; display:flex; align-items:center; gap:6px; justify-content:space-between;">
+              <span>${finalEngaged.toLocaleString()}</span>
+              ${badgeChange(engagedChange)}
+            </div>
+          </div>
+
+          <div style="padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px;">Novos Seguidores</div>
+              <div style="font-size:14px; font-weight:800; color:var(--gold); margin-top:2px; display:flex; align-items:center; gap:6px; justify-content:space-between;">
+                <span>${finalFollowers >= 0 ? '+' + finalFollowers : finalFollowers}</span>
+                ${badgeChange(followersChange)}
+              </div>
+            </div>
+            <div style="font-size:8px; color:var(--text-muted); border-top:1px dashed var(--border); padding-top:4px; margin-top:4px;">
+              Total Histórico: <strong>+${totalHistFollowers}</strong>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+      <!-- Detalhes do Perfil Conectado -->
+      <div style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="${profile.profile_picture_url || ''}" style="width:24px; height:24px; border-radius:50%; border:1px solid var(--gold); object-fit:cover; display:${profile.profile_picture_url ? 'block' : 'none'};">
+          <span style="font-size:12px; font-weight:700; color:var(--text);">@${profile.username || '—'}</span>
+          <span style="font-size:11px; color:var(--text-muted);">(${profile.followers_count ? profile.followers_count.toLocaleString() : '0'} seguidores | ${profile.media_count || 0} posts)</span>
+        </div>
+        <div style="font-size:10px; color:var(--text-muted);">${S.igCache.last_saved ? `Sincronizado em: ${formatLastSaved(S.igCache.last_saved)}` : 'Período: Últimos 30 dias'}</div>
+      </div>
+    `;
+    
+    setTimeout(() => {
+      drawProgressRings('ig-rings-canvas', {
+        views: finalViews,
+        reach: finalReach,
+        followers: finalFollowers
+      });
+    }, 60);
+
+  } else {
+    contentEl.innerHTML = `
+      <div style="text-align:center; padding:20px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
+        <div style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:4px;">Nenhuma conta do Instagram conectada</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px; max-width:400px; margin-left:auto; margin-right:auto;">
+          Conecte sua conta do Instagram na aba de Métricas para analisar seu desempenho e ver os gráficos do perfil.
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showView('metricas')">Ir para Métricas</button>
+      </div>
+    `;
+  }
+}
+
+function renderAudienceDemographics() {
+  const container = document.getElementById('ig-audience-card');
+  if(!container) return;
+
+  const audience = S.igCache.audience;
+  if(!audience || !audience.gender) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:20px; color:var(--text-muted);">
+        Aguardando sincronização de dados demográficos do perfil.
+      </div>
+    `;
+    return;
+  }
+
+  const followersCount = S.igCache.profile?.followers_count || 1219;
+
+  let ageHtml = '';
+  audience.age_groups.forEach(item => {
+    ageHtml += `
+      <div style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:8px;">
+        <div style="width:50px; color:var(--text); font-weight:600;">${item.range}</div>
+        <div style="flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; display:flex;">
+          <div style="width:${item.pct}%; height:100%; background:var(--text-muted); border-radius:3px;"></div>
+        </div>
+        <div style="width:45px; text-align:right; font-weight:700; color:var(--text);">${item.pct}%</div>
+      </div>
+    `;
+  });
+
+  let countriesHtml = '';
+  audience.countries.forEach((item, idx) => {
+    countriesHtml += `
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px dashed var(--border);">
+        <span style="color:var(--text); font-weight:600;">${idx+1}. ${item.name}</span>
+        <span style="color:var(--text-muted); font-weight:700;">${item.pct}%</span>
+      </div>
+    `;
+  });
+
+  let citiesHtml = '';
+  audience.cities.forEach((item, idx) => {
+    citiesHtml += `
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; padding-bottom:4px; border-bottom:1px dashed var(--border);">
+        <span style="color:var(--text); font-weight:600;">${idx+1}. ${item.name}</span>
+        <span style="color:var(--text-muted); font-weight:700;">${item.pct}%</span>
+      </div>
+    `;
+  });
+
+  container.innerHTML = `
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 15px;">
+      
+      <!-- Bloco 1: Gênero e Seguidores -->
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); text-align:center;">
+        
+        <div style="position:relative; width:130px; height:130px; margin-bottom:15px;">
+          <canvas id="ig-audience-donut-canvas" width="130" height="130"></canvas>
+          <div style="position:absolute; top:0; left:0; width:130px; height:130px; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none;">
+            <span style="font-size:18px; font-weight:800; color:var(--text);">${followersCount.toLocaleString()}</span>
+            <span style="font-size:9px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; font-weight:700;">Seguidores</span>
+          </div>
+        </div>
+
+        <div style="width:100%; border-top:1px solid var(--border); padding-top:12px;">
+          <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.3px; margin-bottom:8px;">Gênero</div>
+          <div style="display:flex; justify-content:space-around; align-items:center;">
+            <div>
+              <div style="font-size:15px; font-weight:800; color:var(--text);">${audience.gender.women}%</div>
+              <div style="font-size:10px; color:var(--text-muted); display:flex; align-items:center; gap:4px; justify-content:center;">
+                <span style="width:8px; height:8px; border-radius:50%; background:#405DE6; display:inline-block;"></span> Mulheres
+              </div>
+            </div>
+            <div style="border-left:1px solid var(--border); height:24px;"></div>
+            <div>
+              <div style="font-size:15px; font-weight:800; color:var(--text);">${audience.gender.men}%</div>
+              <div style="font-size:10px; color:var(--text-muted); display:flex; align-items:center; gap:4px; justify-content:center;">
+                <span style="width:8px; height:8px; border-radius:50%; background:#9CA3AF; display:inline-block;"></span> Homens
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bloco 2: Faixa Etária -->
+      <div style="padding:20px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
+        <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.3px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Faixa Etária</div>
+        <div>${ageHtml}</div>
+      </div>
+
+      <!-- Bloco 3: Localização (Países e Cidades) -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:20px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.3px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Principais Países</div>
+          <div>${countriesHtml}</div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.3px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Principais Cidades</div>
+          <div>${citiesHtml}</div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  setTimeout(() => {
+    const canvas = document.getElementById('ig-audience-donut-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,130,130);
+
+    const womenPct = audience.gender.women / 100;
+    const menPct = audience.gender.men / 100;
+
+    // Mulheres (Azul)
+    ctx.beginPath();
+    ctx.arc(65, 65, 54, -Math.PI / 2, -Math.PI / 2 + (womenPct * Math.PI * 2));
+    ctx.strokeStyle = '#405DE6';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+
+    // Homens (Cinza)
+    ctx.beginPath();
+    ctx.arc(65, 65, 54, -Math.PI / 2 + (womenPct * Math.PI * 2), -Math.PI / 2 + (womenPct * Math.PI * 2) + (menPct * Math.PI * 2));
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e5e7eb';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+  }, 60);
+}
+
+function formatLastSaved(isoString) {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return isoString;
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)} às ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function findMatchingIdea(caption) {
+  if (!caption) return null;
+  const cleanText = (text) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/g, " ");
+  
+  const stopwords = new Set([
+    'para', 'como', 'mais', 'este', 'esta', 'isso', 'esse', 'essa', 'tudo', 'todos', 
+    'toda', 'todas', 'pelo', 'pela', 'pelos', 'pelas', 'seus', 'suas', 'meus', 'minhas', 
+    'onde', 'quem', 'qual', 'quais', 'quando', 'dois', 'tres', 'muito', 'muitos', 'muita', 
+    'muitas', 'aqui', 'ali', 'uma', 'umas', 'pelo', 'pelas', 'seja', 'seria', 'está', 'esta',
+    'com', 'dos', 'das', 'seu', 'sua', 'dele', 'dela', 'num', 'numa'
+  ]);
+  
+  const words = cleanText(caption).split(/\s+/).filter(w => w.length > 3 && !stopwords.has(w));
+  if (words.length === 0) return null;
+
+  let bestMatch = null;
+  let maxMatches = 0;
+
+  (S.content || []).forEach(idea => {
+    const titleWords = cleanText(idea.titulo || "").split(/\s+/).filter(w => w.length > 3 && !stopwords.has(w));
+    const matches = words.filter(w => titleWords.includes(w));
+    if (matches.length >= 2 && matches.length > maxMatches) {
+      maxMatches = matches.length;
+      bestMatch = idea;
+    }
+  });
+
+  return bestMatch;
+}
+
+function getMatchedIdeaForPost(post) {
+  if (!post) return null;
+  if (post.is_personal || post.linked_idea_id === 'none') return null;
+  if (post.linked_idea_id) {
+    return S.content.find(idea => idea.id === post.linked_idea_id);
+  }
+  return findMatchingIdea(post.caption);
+}
+
+function unlinkPost(postId) {
+  const post = (S.igCache.posts || []).find(p => p.id === postId);
+  if (post) {
+    post.linked_idea_id = 'none';
+    post.is_personal = false;
+    persistIgCache();
+    loadInstagramMetrics();
+  }
+}
+
+function markAsPersonal(postId) {
+  const post = (S.igCache.posts || []).find(p => p.id === postId);
+  if (post) {
+    post.is_personal = true;
+    post.linked_idea_id = 'none';
+    persistIgCache();
+    loadInstagramMetrics();
+  }
+}
+
+function unmarkPersonal(postId) {
+  const post = (S.igCache.posts || []).find(p => p.id === postId);
+  if (post) {
+    post.is_personal = false;
+    post.linked_idea_id = null;
+    persistIgCache();
+    loadInstagramMetrics();
+  }
+}
+
+function linkPostToIdea(postId, ideaId) {
+  const post = (S.igCache.posts || []).find(p => p.id === postId);
+  const idea = S.content.find(i => i.id === ideaId);
+  if (post && idea) {
+    post.linked_idea_id = ideaId;
+    post.is_personal = false;
+    persistIgCache();
+    loadInstagramMetrics();
+    toast(`Post vinculado a ${ideaId} com sucesso!`);
+  }
+}
+
+function showLinkDropdown(event, postId) {
+  const existing = document.getElementById('link-post-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'link-post-modal';
+  modal.className = 'modal active';
+  modal.setAttribute('data-post-id', postId);
+  
+  const ideas = S.content || [];
+  let listHtml = ideas.map(idea => `
+    <div class="acervo-item" style="padding:10px; border-bottom:1px solid var(--border); cursor:pointer; font-size:12px; display:flex; justify-content:space-between; align-items:center;" onclick="linkPostToIdea('${postId}', '${idea.id}'); document.getElementById('link-post-modal').remove();">
+      <div>
+        <strong style="color:var(--text);">${idea.id}</strong> - <span style="color:var(--text-muted);">${idea.titulo.slice(0,55)}...</span>
+      </div>
+      <span class="pill ${pillClass(idea.status)}" style="font-size:9px; padding:1px 5px;">${idea.status}</span>
+    </div>
+  `).join('');
+
+  modal.innerHTML = `
+    <div class="modal-card" style="width:100%; max-width:500px; max-height:80vh; display:flex; flex-direction:column; padding:20px; background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow-lg);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+        <h3 style="margin:0; font-size:14px; font-weight:700; color:var(--text);">Vincular Post a uma Ideia Editorial</h3>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('link-post-modal').remove()" style="font-size:14px; padding:2px 8px;">✕</button>
+      </div>
+      
+      <input type="text" placeholder="Buscar ideia por título ou ID..." style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:12px; font-size:12px; background:var(--bg); color:var(--text);" oninput="filterLinkIdeas(this.value)">
+      
+      <div id="link-ideas-list" style="flex:1; overflow-y:auto; max-height:300px; display:flex; flex-direction:column; gap:4px;">
+        ${listHtml}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+function filterLinkIdeas(query) {
+  const listEl = document.getElementById('link-ideas-list');
+  if (!listEl) return;
+  const q = query.toLowerCase();
+  const postId = document.getElementById('link-post-modal').getAttribute('data-post-id');
+  
+  const ideas = S.content || [];
+  const filtered = ideas.filter(idea => 
+    idea.id.toLowerCase().includes(q) || 
+    (idea.titulo || "").toLowerCase().includes(q)
+  );
+
+  listEl.innerHTML = filtered.map(idea => `
+    <div class="acervo-item" style="padding:10px; border-bottom:1px solid var(--border); cursor:pointer; font-size:12px; display:flex; justify-content:space-between; align-items:center;" onclick="linkPostToIdea('${postId}', '${idea.id}'); document.getElementById('link-post-modal').remove();">
+      <div>
+        <strong style="color:var(--text);">${idea.id}</strong> - <span style="color:var(--text-muted);">${idea.titulo.slice(0,55)}...</span>
+      </div>
+      <span class="pill ${pillClass(idea.status)}" style="font-size:9px; padding:1px 5px;">${idea.status}</span>
+    </div>
+  `).join('');
+}
+
+function syncMatchedIdeas() {
+  let dbUpdated = false;
+  const activePosts = S.igCache.posts || [];
+  const matchedIdeaIds = new Set();
+  
+  activePosts.forEach(item => {
+    const match = getMatchedIdeaForPost(item);
+    if (match) {
+      matchedIdeaIds.add(match.id);
+      
+      let reach = 0, saved = 0, views = 0, shares = 0, totalInteractions = 0;
+      if(item.insights && item.insights.data){
+        item.insights.data.forEach(m => {
+          const val = m.values && m.values[0] ? m.values[0].value : 0;
+          if(m.name === 'reach') reach = val;
+          else if(m.name === 'saved') saved = val;
+          else if(m.name === 'views') views = val;
+          else if(m.name === 'shares') shares = val;
+          else if(m.name === 'total_interactions') totalInteractions = val;
+        });
+      }
+      
+      if(match.status !== 'Publicado'){
+        match.status = 'Publicado';
+        dbUpdated = true;
+      }
+      const postDate = item.timestamp.split('T')[0];
+      if(match.data !== postDate){
+        match.data = postDate;
+        dbUpdated = true;
+      }
+      
+      if (match.likes !== item.like_count || match.comments !== item.comments_count || match.views !== views || match.ig_post_id !== item.id) {
+        match.likes = item.like_count;
+        match.comments = item.comments_count;
+        match.views = views;
+        match.reach = reach;
+        match.shares = shares;
+        match.saved = saved;
+        match.total_interactions = totalInteractions;
+        match.ig_post_id = item.id;
+        dbUpdated = true;
+      }
+    }
+  });
+
+  S.content.forEach(idea => {
+    if (idea.ig_post_id && !matchedIdeaIds.has(idea.id)) {
+      idea.status = 'Curado';
+      idea.data = '';
+      idea.likes = null;
+      idea.comments = null;
+      idea.views = null;
+      idea.reach = null;
+      idea.shares = null;
+      idea.saved = null;
+      idea.total_interactions = null;
+      delete idea.ig_post_id;
+      dbUpdated = true;
+    }
+  });
+
+  if (dbUpdated) {
+    persist();
+  }
+}
+
+async function loadInstagramMetrics(){
+  const profileEl = document.getElementById('ig-profile-card');
+  const mediaEl = document.getElementById('ig-media-card');
+  const timelineEl = document.getElementById('ig-timeline-content');
+  if(!profileEl || !mediaEl) return;
+
+  profileEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);padding:16px;">Carregando perfil...</div>`;
+  mediaEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);padding:16px;">Carregando métricas e publicações...</div>`;
+  if(timelineEl) {
+    timelineEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:16px;">Carregando linha do tempo detalhada...</div>`;
+  }
+
+  let isOfflineFallback = false;
+  let activePosts = [];
+
+  const activeToken = localStorage.getItem('vertice_ig_token') || IG_ACCESS_TOKEN;
+
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    const since = now - 30 * 86400; 
+    const until = now;
+
+    let [profData, reachData, followerData, viewsData, engagedData, mediaData] = [null, null, null, null, null, null];
+
+    try {
+      const results = await Promise.all([
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}?fields=username,name,followers_count,media_count,profile_picture_url&access_token=${activeToken}`),
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}/insights?metric=reach&period=day&since=${since}&until=${until}&access_token=${activeToken}`),
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}/insights?metric=follower_count&period=day&since=${since}&until=${until}&access_token=${activeToken}`),
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}/insights?metric=views&period=day&metric_type=total_value&since=${since}&until=${until}&access_token=${activeToken}`),
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}/insights?metric=accounts_engaged&period=day&metric_type=total_value&since=${since}&until=${until}&access_token=${activeToken}`),
+        safeFetchJson(`https://graph.facebook.com/v20.0/${IG_BUSINESS_ID}/media?fields=id,caption,media_type,permalink,timestamp,like_count,comments_count,insights.metric(reach,saved,views,shares,total_interactions)&limit=15&access_token=${activeToken}`)
+      ]);
+      profData = results[0];
+      reachData = results[1];
+      followerData = results[2];
+      viewsData = results[3];
+      engagedData = results[4];
+      mediaData = results[5];
+    } catch(apiErr) {
+      console.warn("Instagram API call failed, attempting server cache fallback...", apiErr);
+    }
+
+    if(!profData || !mediaData) {
+      isOfflineFallback = true;
+      S.igOfflineFallback = true;
+      const warningEl = document.getElementById('ig-token-warning');
+      if(warningEl) warningEl.style.display = 'flex';
+      console.log("Tentando obter dados do Servidor Backend Local...");
+      try {
+        const localRes = await fetch('http://localhost:5000/api/metrics');
+        if(localRes.ok) {
+          const localData = await localRes.json();
+          if(localData && localData.profile && localData.profile.username) {
+            S.igCache = localData;
+            console.log("Fallback efetuado com sucesso usando o cache do Servidor Backend.");
+          }
+        }
+      } catch(localErr) {
+        console.error("Servidor backend local offline ou inacessível. Usando cache local do navegador.", localErr);
+      }
+    } else {
+      S.igOfflineFallback = false;
+      const warningEl = document.getElementById('ig-token-warning');
+      if(warningEl) warningEl.style.display = 'none';
+      if(profData) {
+        S.igCache.profile = profData;
+      }
+
+      const parseTimeSeries = (data) => {
+        if(!data || !data.data || !data.data[0] || !data.data[0].values) return [];
+        return data.data[0].values.map(v => ({
+          date: v.end_time.split('T')[0],
+          value: v.value || 0
+        }));
+      };
+
+      const reachSeries = parseTimeSeries(reachData);
+      const followerSeries = parseTimeSeries(followerData);
+
+      const getPeriodMetrics = (series) => {
+        if(!series || series.length === 0) return { total: 0, current: 0, previous: 0, change: 0 };
+        const sorted = [...series].sort((a,b) => a.date.localeCompare(b.date));
+        const mid = Math.floor(sorted.length / 2);
+        const previousSlice = sorted.slice(0, mid);
+        const currentSlice = sorted.slice(mid);
+        
+        const previousTotal = previousSlice.reduce((s,v) => s + v.value, 0);
+        const currentTotal = currentSlice.reduce((s,v) => s + v.value, 0);
+        const total = sorted.reduce((s,v) => s + v.value, 0);
+        
+        const change = previousTotal === 0 ? 0 : Math.round(((currentTotal - previousTotal) / previousTotal) * 100);
+        return { total, current: currentTotal, previous: previousTotal, change };
+      };
+
+      const reachStats = getPeriodMetrics(reachSeries);
+      const followerStats = getPeriodMetrics(followerSeries);
+
+      const totViews = (viewsData && viewsData.data && viewsData.data[0] && viewsData.data[0].total_value) ? viewsData.data[0].total_value.value : 0;
+      const totEngaged = (engagedData && engagedData.data && engagedData.data[0] && engagedData.data[0].total_value) ? engagedData.data[0].total_value.value : 0;
+
+      let viewsChange = 0;
+      let engagedChange = 0;
+      const oldInsights = S.igCache.insights_30d || {};
+      if(oldInsights.views && totViews && totViews !== oldInsights.views) {
+        viewsChange = Math.round(((totViews - oldInsights.views) / oldInsights.views) * 100);
+      }
+      if(oldInsights.engaged && totEngaged && totEngaged !== oldInsights.engaged) {
+        engagedChange = Math.round(((totEngaged - oldInsights.engaged) / oldInsights.engaged) * 100);
+      }
+
+      S.igCache.insights_30d = {
+        reach: reachStats.total,
+        reachChange: reachStats.change,
+        followers: followerStats.total,
+        followersChange: followerStats.change,
+        views: totViews,
+        viewsChange: viewsChange,
+        engaged: totEngaged,
+        engagedChange: engagedChange
+      };
+
+      if(mediaData && mediaData.data){
+        const newPosts = mediaData.data;
+        const cachePosts = S.igCache.posts || [];
+        const existingPostsMap = {};
+        cachePosts.forEach(p => { existingPostsMap[p.id] = p; });
+        
+        newPosts.forEach(np => {
+          if (existingPostsMap[np.id]) {
+            existingPostsMap[np.id] = { ...existingPostsMap[np.id], ...np };
+          } else {
+            existingPostsMap[np.id] = np;
+          }
+        });
+        
+        S.igCache.posts = Object.values(existingPostsMap);
+      }
+
+      const dailyMap = {};
+      const dateList = [];
+      for(let i=0; i<30; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const iso = d.toISOString().split('T')[0];
+        dateList.push(iso);
+        dailyMap[iso] = { date: iso, reach: 0, followers: 0, posts: [] };
+      }
+
+      reachSeries.forEach(v => {
+        if(dailyMap[v.date]) dailyMap[v.date].reach = v.value;
+      });
+
+      followerSeries.forEach(v => {
+        if(dailyMap[v.date]) dailyMap[v.date].followers = v.value;
+      });
+
+      const allPosts = S.igCache.posts || [];
+      allPosts.forEach(post => {
+        const iso = post.timestamp.split('T')[0];
+        if(dailyMap[iso]) {
+          dailyMap[iso].posts.push(post);
+        }
+      });
+
+      S.igCache.daily_insights = dateList.map(iso => dailyMap[iso]);
+      S.igCache.last_saved = new Date().toISOString();
+
+      persistIgCache();
+    }
+
+    const titleEl = document.getElementById('ig-section-title');
+    const subEl = document.getElementById('ig-section-sub');
+    if (titleEl) {
+      titleEl.textContent = isOfflineFallback ? "Analytics Instagram (Cache Local)" : "Analytics Instagram (Ao Vivo)";
+    }
+    if (subEl && S.igCache.profile && S.igCache.profile.username) {
+      const timeStr = S.igCache.last_saved ? formatLastSaved(S.igCache.last_saved) : 'Não disponível';
+      subEl.innerHTML = isOfflineFallback
+        ? `Métricas e performance de @${S.igCache.profile.username} • <span class="pill pill-reformular" style="font-size:9px;padding:1px 5px;display:inline-block;vertical-align:middle;margin-right:4px;">Cache Local</span> (Última sincronização em ${timeStr})`
+        : `Métricas e performance em tempo real de @${S.igCache.profile.username} • <span class="pill pill-curado" style="font-size:9px;padding:1px 5px;display:inline-block;vertical-align:middle;margin-right:4px;background:#10B981;color:#fff;border-color:#10B981;">Ao Vivo</span> (Sincronizado às ${timeStr})`;
+    }
+
+    const profile = S.igCache.profile;
+    if(profile && profile.username){
+      profileEl.innerHTML = `
+        <div style="text-align:center; position:relative;">
+          ${isOfflineFallback ? `<span class="pill pill-reformular" style="font-size:8px;position:absolute;top:-5px;right:-5px;padding:2px 6px;" title="Token expirado ou sem conexão. Exibindo dados locais.">Cache Local</span>` : ''}
+          <img src="${profile.profile_picture_url || 'https://via.placeholder.com/80'}" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--gold);box-shadow:var(--shadow);object-fit:cover; display:${profile.profile_picture_url ? 'inline-block' : 'none'};" alt="Perfil">
+          <div style="margin-top:8px;">
+            <div style="font-size:16px;font-weight:700;color:var(--text);">${profile.name}</div>
+            <div style="font-size:12px;color:var(--gold);font-weight:600;">@${profile.username}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+            <div>
+              <div style="font-size:18px;font-weight:800;color:var(--text);">${profile.followers_count ? profile.followers_count.toLocaleString() : '0'}</div>
+              <div style="font-size:10px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px;">Seguidores</div>
+            </div>
+            <div>
+              <div style="font-size:18px;font-weight:800;color:var(--text);">${profile.media_count || '0'}</div>
+              <div style="font-size:10px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px;">Posts</div>
+            </div>
+          </div>
+          <a href="https://instagram.com/${profile.username}" target="_blank" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%;text-align:center;display:block;border:1px solid var(--border);">Ver no Instagram ↗</a>
+        </div>
+      `;
+    } else {
+      profileEl.innerHTML = `<div style="font-size:12px;color:var(--red);text-align:center;padding:16px;">Erro ao carregar perfil. Verifique seu token de acesso.</div>`;
+    }
+
+    const dailyInsights = S.igCache.daily_insights || [];
+    if(timelineEl && dailyInsights.length > 0) {
+      const maxReach = Math.max(...dailyInsights.map(d => d.reach)) || 1;
+      
+      let timelineHtml = `<div style="display:flex; flex-direction:column; gap:10px;">`;
+      
+      dailyInsights.forEach(day => {
+        const dateObj = new Date(day.date + 'T12:00:00');
+        const dayLabel = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        const weekDay = dateObj.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+        const pct = Math.min(Math.round((day.reach / maxReach) * 100), 100);
+        
+        let postsHtml = '';
+        if(day.posts && day.posts.length > 0) {
+          day.posts.forEach(p => {
+            const localDate = new Date(p.timestamp);
+            const pTime = localDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const pIcon = p.media_type === 'VIDEO' ? ICONS.reels : p.media_type === 'CAROUSEL_ALBUM' ? ICONS.carousel : ICONS.photo;
+            const shortCap = p.caption ? p.caption.slice(0, 45) + (p.caption.length > 45 ? '...' : '') : 'Sem legenda';
+            const match = getMatchedIdeaForPost(p);
+            
+            postsHtml += `
+              <div style="margin-top:4px; display:inline-flex; align-items:center; gap:6px; background:var(--bg); border:1px solid var(--border); padding:4px 10px; border-radius:12px; font-size:10px; font-weight:600; color:var(--text); flex-wrap: wrap;">
+                <span style="color:var(--gold);">${pTime}</span>
+                <span>${pIcon}</span>
+                <span style="color:var(--text-muted);">${shortCap}</span>
+                ${match ? `<span style="color:var(--gold); font-size:9px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:2px;" onclick="openDetail('${match.id}')"><svg style="width:10px;height:10px;stroke:currentColor;stroke-width:2.5;fill:none;vertical-align:middle;" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>${match.id}</span>` : ''}
+                <a href="${p.permalink}" target="_blank" style="color:var(--gold); text-decoration:none; margin-left:4px;">↗</a>
+              </div>
+            `;
+          });
+        }
+        
+        timelineHtml += `
+          <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); padding-bottom:8px; padding-top:4px; flex-wrap: wrap;">
+            <div style="width:75px; flex-shrink:0;">
+              <span style="font-weight:700; color:var(--text);">${dayLabel}</span>
+              <span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-left:4px;">${weekDay}</span>
+            </div>
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:4px; min-width: 200px;">
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted);">
+                <span>Alcance diário: <strong>${day.reach.toLocaleString()}</strong></span>
+                ${day.followers > 0 ? `<span style="color:#10B981; font-weight:700;">+${day.followers} seguidores</span>` : ''}
+              </div>
+              <div style="width:100%; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; position:relative;">
+                <div style="width:${pct}%; height:100%; background:${day.posts.length > 0 ? 'var(--gold)' : 'var(--text-muted)'}; border-radius:3px; transition:width 0.4s ease;"></div>
+              </div>
+              ${postsHtml ? `<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;">${postsHtml}</div>` : ''}
+            </div>
+          </div>
+        `;
+      });
+      
+      timelineHtml += '</div>';
+      timelineEl.innerHTML = timelineHtml;
+    } else if(timelineEl) {
+      timelineEl.innerHTML = `<div class="empty"><div class="e-msg">Nenhuma métrica temporal de 30 dias salva no cache local.</div></div>`;
+    }
+
+    const finalViews = S.igCache.insights_30d.views || 0;
+    const finalReach = S.igCache.insights_30d.reach || 0;
+    const finalEngaged = S.igCache.insights_30d.engaged || 0;
+    const finalFollowers = S.igCache.insights_30d.followers || 0;
+
+    renderDashboardInstagram();
+    renderAudienceDemographics();
+
+    syncMatchedIdeas();
+    activePosts = S.igCache.posts || [];
+
+    analyzeContentData();
+
+    const totalHistFollowers = (S.igCache.daily_insights || []).reduce((sum, d) => sum + (d.followers || 0), 0);
+    const totalHistReach = (S.igCache.daily_insights || []).reduce((sum, d) => sum + (d.reach || 0), 0);
+
+    // 6. Renderizar Grid de Posts na aba Métricas
+    let html = `
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:12px;">Performance no Período (Últimos 30 Dias)</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;">
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+              <div style="font-size:18px;font-weight:800;color:var(--gold);">${finalViews ? finalViews.toLocaleString() : '0'}</div>
+              <div style="font-size:9px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;letter-spacing:.5px;">Visualizações do Perfil</div>
+            </div>
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="font-size:18px;font-weight:800;color:var(--text);">${finalReach ? finalReach.toLocaleString() : '0'}</div>
+                <div style="font-size:9px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;letter-spacing:.5px;">Alcance (30d)</div>
+              </div>
+              <div style="font-size:9px;color:var(--text-muted);border-top:1px dashed var(--border);padding-top:4px;margin-top:4px;">
+                Total Histórico: <strong>${totalHistReach.toLocaleString()}</strong>
+              </div>
+            </div>
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+              <div style="font-size:18px;font-weight:800;color:var(--text);">${finalEngaged ? finalEngaged.toLocaleString() : '0'}</div>
+              <div style="font-size:9px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;letter-spacing:.5px;">Contas Engajadas</div>
+            </div>
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="font-size:18px;font-weight:800;color:var(--text);">${finalFollowers >= 0 ? '+' + finalFollowers : finalFollowers}</div>
+                <div style="font-size:9px;text-transform:uppercase;color:var(--text-muted);margin-top:4px;letter-spacing:.5px;">Novos Seguidores</div>
+              </div>
+              <div style="font-size:9px;color:var(--text-muted);border-top:1px dashed var(--border);padding-top:4px;margin-top:4px;">
+                Total Histórico: <strong>+${totalHistFollowers}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:12px;">Últimos Posts e Métricas de Engajamento</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+    `;
+
+    if(activePosts.length > 0){
+      activePosts.forEach(item => {
+        const caption = item.caption ? item.caption.slice(0, 80) + (item.caption.length > 80 ? '...' : '') : 'Sem legenda';
+        const date = new Date(item.timestamp).toLocaleDateString('pt-BR');
+        const typeIcon = item.media_type === 'VIDEO' ? ICONS.reels : item.media_type === 'CAROUSEL_ALBUM' ? ICONS.carousel : ICONS.photo;
+
+        let reach = 0, saved = 0, views = 0, shares = 0, totalInteractions = 0;
+        if(item.insights && item.insights.data){
+          item.insights.data.forEach(m => {
+            const val = m.values && m.values[0] ? m.values[0].value : 0;
+            if(m.name === 'reach') reach = val;
+            else if(m.name === 'saved') saved = val;
+            else if(m.name === 'views') views = val;
+            else if(m.name === 'shares') shares = val;
+            else if(m.name === 'total_interactions') totalInteractions = val;
+          });
+        }
+
+        const match = getMatchedIdeaForPost(item);
+
+        let linkButtonHtml = '';
+        if (item.is_personal) {
+          linkButtonHtml = `
+            <span class="pill pill-reformular" style="font-size:8px;padding:2px 6px;display:inline-flex;align-items:center;gap:3px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">
+              Post Pessoal
+            </span>
+            <button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 4px;margin-left:4px;color:var(--gold);border:1px solid var(--border);border-radius:4px;" onclick="event.stopPropagation();unmarkPersonal('${item.id}')">
+              Tornar Comercial
+            </button>
+          `;
+        } else if (match) {
+          linkButtonHtml = `
+            <span class="pill pill-curado" style="font-size:8px;padding:2px 6px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;" onclick="openDetail('${match.id}')">
+              <svg style="width:9px;height:9px;stroke:currentColor;stroke-width:2.5;fill:none;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 
+              Vinculado a ${match.id}
+            </span>
+            <button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 4px;margin-left:4px;color:#ef4444;border:1px solid rgba(239,68,68,0.2);border-radius:4px;" onclick="event.stopPropagation();unlinkPost('${item.id}')" title="Desvincular post">
+              Desvincular
+            </button>
+          `;
+        } else {
+          linkButtonHtml = `
+            <button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 6px;color:var(--gold);border:1px solid var(--border);border-radius:4px;" onclick="event.stopPropagation();showLinkDropdown(event, '${item.id}')">
+              + Vincular a Ideia
+            </button>
+            <button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 6px;color:var(--text-muted);border:1px solid var(--border);border-radius:4px;margin-left:4px;" onclick="event.stopPropagation();markAsPersonal('${item.id}')" title="Marcar como post pessoal">
+              Marcar Pessoal
+            </button>
+          `;
+        }
+
+        html += `
+          <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;">
+                <span style="font-size:15px;flex-shrink:0;display:inline-flex;align-items:center;">${typeIcon}</span>
+                <span style="font-weight:600;color:var(--text);line-height:1.4;margin-right:8px;">${caption}</span>
+                ${linkButtonHtml}
+              </div>
+              <a href="${item.permalink}" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:700;font-size:13px;padding:2px 6px;flex-shrink:0;" title="Ver no Instagram">↗</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:8px;margin-top:2px;font-size:10px;color:var(--text-muted);flex-wrap:wrap;gap:8px;">
+              <div>${date}</div>
+              <div style="display:flex;gap:12px;align-items:center;">
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Curtidas">${ICONS.heart} ${item.like_count}</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Comentários">${item.comments_count}</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Visualizações">${ICONS.eye} ${views}</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Alcance">${ICONS.reach} ${reach}</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Compartilhamentos">${ICONS.share} ${shares}</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;" title="Salvamentos">${ICONS.save} ${saved}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    } else {
+      html += `<div class="empty"><div class="e-msg">Nenhuma publicação encontrada no Instagram.</div></div>`;
+    }
+
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
+    mediaEl.innerHTML = html;
+
+  } catch(err) {
+    profileEl.innerHTML = `<div style="font-size:12px;color:var(--red);text-align:center;padding:16px;">Erro ao carregar.</div>`;
+    mediaEl.innerHTML = `<div style="font-size:12px;color:var(--red);text-align:center;padding:16px;">Ocorreu um erro ao carregar as métricas do Instagram. Detalhes: ${err.message}</div>`;
+  }
+}
+
+function renderMetricas(){
+  loadInstagramMetrics();
+}
+
+function analyzeContentData(){
+  const posts = S.content.filter(c => c.views || c.reach);
+  const pilarEl = document.getElementById('intel-pillars');
+  const captionEl = document.getElementById('intel-captions');
+  if(!pilarEl || !captionEl) return;
+
+  if(posts.length === 0){
+    pilarEl.innerHTML = `
+      <div class="mc-title">Pilar vs Performance Média (Real)</div>
+      <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Vincule posts para gerar análise de performance.</div>
+    `;
+    captionEl.innerHTML = `
+      <div class="mc-title">Legenda vs Performance Média (Real)</div>
+      <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Vincule posts para gerar análise de performance.</div>
+    `;
+    return;
+  }
+
+  // 1. Análise por Pilar
+  const pillarStats = {};
+  posts.forEach(p => {
+    const pil = p.pilar;
+    const reach = p.reach || 0;
+    const views = p.views || 0;
+    const likes = p.likes || 0;
+    if(!pillarStats[pil]) pillarStats[pil] = { count: 0, reach: 0, views: 0, likes: 0 };
+    pillarStats[pil].count++;
+    pillarStats[pil].reach += reach;
+    pillarStats[pil].views += views;
+    pillarStats[pil].likes += likes;
+  });
+
+  const pillarEntries = Object.entries(pillarStats).map(([k, v]) => {
+    return { name: k, avgReach: Math.round(v.reach / v.count), avgViews: Math.round(v.views / v.count), count: v.count };
+  }).sort((a,b) => b.avgReach - a.avgReach);
+
+  const colors = ['#B89047','#3B82F6','#10B981','#8B5CF6','#EF4444','#EC4899'];
+  let pillarHtml = `<div class="mc-title" style="margin-bottom:12px;">Pilar vs Alcance Médio (Real)</div>`;
+  if(pillarEntries.length > 0){
+    const maxVal = Math.max(...pillarEntries.map(e => e.avgReach)) || 1;
+    pillarHtml += pillarEntries.map((e, i) => `
+      <div class="bar-row" style="margin-bottom:10px;">
+        <div class="bar-label" title="${e.name}" style="width:120px;">${e.name} (${e.count})</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(e.avgReach/maxVal*100)}%;background:${colors[i%colors.length]}"></div></div>
+        <div class="bar-count" style="width:40px;">${e.avgReach}</div>
+      </div>
+    `).join('');
+  } else {
+    pillarHtml += `<div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Sem dados suficientes.</div>`;
+  }
+  pilarEl.innerHTML = pillarHtml;
+
+  // 2. Análise por Legenda
+  const captionStats = {
+    'Curta (<150 c)': { count: 0, interactions: 0, views: 0 },
+    'Média (150-500 c)': { count: 0, interactions: 0, views: 0 },
+    'Longa (>500 c)': { count: 0, interactions: 0, views: 0 }
+  };
+
+  posts.forEach(p => {
+    const len = p.legenda ? p.legenda.length : (p.titulo ? p.titulo.length : 0);
+    let cat = 'Curta (<150 c)';
+    if(len > 500) cat = 'Longa (>500 c)';
+    else if(len >= 150) cat = 'Média (150-500 c)';
+
+    const inter = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saved || 0);
+    captionStats[cat].count++;
+    captionStats[cat].interactions += inter;
+    captionStats[cat].views += (p.views || 0);
+  });
+
+  const captionEntries = Object.entries(captionStats).map(([k, v]) => {
+    return { name: k, avgInter: v.count ? Math.round(v.interactions / v.count) : 0, count: v.count };
+  });
+
+  let captionHtml = `<div class="mc-title" style="margin-bottom:12px;">Tamanho de Legenda vs Interações Médias</div>`;
+  const maxInter = Math.max(...captionEntries.map(e => e.avgInter)) || 1;
+  captionHtml += captionEntries.map((e, i) => `
+    <div class="bar-row" style="margin-bottom:10px;">
+      <div class="bar-label" title="${e.name}" style="width:120px;">${e.name} (${e.count})</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(e.avgInter/maxInter*100)}%;background:${colors[(i+2)%colors.length]}"></div></div>
+      <div class="bar-count" style="width:30px;">${e.avgInter}</div>
+    </div>
+  `).join('');
+  
+  // Recomendações locais
+  let bestPillar = pillarEntries.length > 0 ? pillarEntries[0].name : null;
+  let bestCaption = [...captionEntries].sort((a,b) => b.avgInter - a.avgInter)[0].name;
+  
+  captionHtml += `
+    <div style="margin-top:16px;padding:10px;background:var(--nav-active-bg);border:1px solid var(--nav-active-border);border-radius:var(--radius-sm);font-size:11px;color:var(--text);line-height:1.5;">
+      <strong>Diretriz de Performance Editorial:</strong><br>
+      ${bestPillar ? `• O pilar <strong>${bestPillar}</strong> gerou maior alcance real. Recomendado focar mais ideias de conteúdo aqui.<br>` : ''}
+      • Legendas com comprimento <strong>${bestCaption}</strong> geram a maior taxa média de interação.
+    </div>
+  `;
+  captionEl.innerHTML = captionHtml;
+}
+
+
+// ══════════ MODAL ADICIONAR ══════════
+function openAdd(){
+  S.editId=null;
+  document.getElementById('modal-title').textContent='Nova Ideia de Conteúdo';
+  document.getElementById('delete-btn').style.display='none';
+  resetForm();
+  openModal('modal-add');
+}
+
+function openAddForDate(iso){ openAdd(); setTimeout(()=>{ document.getElementById('f-data').value=iso; },60); }
+
+function openEditModal(id){
+  const c=S.content.find(x=>x.id===id);
+  if(!c) return;
+  S.editId=id;
+  document.getElementById('modal-title').textContent='Editar '+c.id;
+  document.getElementById('delete-btn').style.display='';
+  document.getElementById('f-titulo').value=c.titulo;
+  document.getElementById('f-formato').value=c.formato;
+  document.getElementById('f-funil').value=c.funil;
+  document.getElementById('f-pilar').value=c.pilar;
+  document.getElementById('f-status').value=c.status;
+  document.getElementById('f-cta').value=c.cta;
+  document.getElementById('f-data').value=c.data||'';
+  document.getElementById('f-serie').value=c.serie||'';
+  document.getElementById('f-legenda').value=c.legenda||'';
+  document.getElementById('f-porque').value=c.porque||'';
+  document.getElementById('f-roteiro').value=c.roteiro||'';
+  document.getElementById('f-slides').value=c.slides||'';
+  document.getElementById('f-obrig').checked=!!c.obrig;
+  closeModal('modal-detail');
+  openModal('modal-add');
+}
+
+function resetForm(){
+  ['f-titulo','f-data','f-serie','f-legenda','f-porque','f-roteiro','f-slides'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-formato').value='Reel Curto';
+  document.getElementById('f-funil').value='TOFU';
+  document.getElementById('f-pilar').value='Bastidor';
+  document.getElementById('f-status').value='Ideia';
+  document.getElementById('f-cta').value='WhatsApp';
+  document.getElementById('f-obrig').checked=false;
+}
+
+function saveContent(){
+  const t=document.getElementById('f-titulo').value.trim();
+  if(!t){ alert('Título obrigatório'); return; }
+  const data={
+    titulo:t, formato:document.getElementById('f-formato').value,
+    funil:document.getElementById('f-funil').value, pilar:document.getElementById('f-pilar').value,
+    status:document.getElementById('f-status').value, cta:document.getElementById('f-cta').value,
+    data:document.getElementById('f-data').value, serie:document.getElementById('f-serie').value.trim(),
+    legenda:document.getElementById('f-legenda').value.trim(),
+    porque:document.getElementById('f-porque').value.trim(),
+    roteiro:document.getElementById('f-roteiro').value.trim(),
+    slides:document.getElementById('f-slides').value.trim(),
+    obrig:document.getElementById('f-obrig').checked,
+  };
+  if(S.editId){
+    const idx=S.content.findIndex(c=>c.id===S.editId);
+    if(idx>=0) S.content[idx]={...S.content[idx],...data};
+    toast('✏️ '+S.editId+' atualizado!');
+  } else {
+    S.content.unshift({id:genId(),...data,_ts:Date.now()});
+    toast('💡 Conteúdo adicionado!');
+  }
+  persist(); closeModal('modal-add');
+  renderDashboard();
+  if(document.getElementById('view-acervo').classList.contains('active')) renderAcervo();
+  if(document.getElementById('view-producao').classList.contains('active')) renderProducao();
+  if(document.getElementById('view-calendario').classList.contains('active')) renderCalendar();
+  if(document.getElementById('view-pipeline').classList.contains('active')) renderPipeline();
+}
+
+function deleteContent(){
+  const id=S.editId;
+  if(!id) return;
+  if(!confirm('Excluir '+id+'?')) return;
+  S.content=S.content.filter(c=>c.id!==id);
+  persist(); closeModal('modal-add'); closeModal('modal-detail');
+  renderDashboard(); toast('🗑 '+id+' excluído');
+}
+
+// ══════════ MODAL DETALHE ══════════
+function openDetail(id){
+  const c=S.content.find(x=>x.id===id);
+  if(!c) return;
+  S.editId=id;
+  document.getElementById('detail-title').textContent=c.id+' · '+c.formato;
+  const next=STATUS_ORDER[STATUS_ORDER.indexOf(c.status)+1];
+  document.getElementById('detail-body').innerHTML=`
+    <div style="margin-bottom:12px;">
+      <div style="font-size:16px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:10px;">${c.titulo}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill ${pillClass(c.status)}">${c.status==='Ideia'?'Banco Frio':c.status}</span>
+        <span class="tag ${tagClass(c.formato)}">${c.formato}</span>
+        <span class="tag ${funilClass(c.funil)}">${c.funil}</span>
+        ${c.obrig?'<span class="badge-obrig">OBRIGATÓRIO</span>':''}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:3px;">Pilar</div><div style="font-size:13px;color:var(--text);">${c.pilar}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:3px;">CTA</div><div style="font-size:13px;color:var(--text);">${c.cta}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:3px;">Data</div><div style="font-size:13px;color:var(--text);">${fmtDate(c.data)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:3px;">Série</div><div style="font-size:13px;color:var(--text);">${c.serie||'—'}</div></div>
+    </div>
+    ${c.views ? `
+    <div style="background:rgba(184,144,71,0.08);border:1px solid var(--nav-active-border);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;font-size:12px;">
+      <div style="font-weight:700;color:var(--gold);margin-bottom:8px;font-size:10px;text-transform:uppercase;letter-spacing:.8px;">MÉTRICAS INSTAGRAM (AO VIVO)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div><div style="font-size:14px;font-weight:800;color:var(--text);">${c.views.toLocaleString()}</div><div style="font-size:9px;color:var(--text-muted);">Views</div></div>
+        <div><div style="font-size:14px;font-weight:800;color:var(--text);">${c.reach.toLocaleString()}</div><div style="font-size:9px;color:var(--text-muted);">Alcance</div></div>
+        <div><div style="font-size:14px;font-weight:800;color:var(--text);">${c.total_interactions.toLocaleString()}</div><div style="font-size:9px;color:var(--text-muted);">Interações</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--text-muted);border-top:1px dashed var(--border);padding-top:6px;align-items:center;">
+        <span style="display:inline-flex;align-items:center;gap:10px;">
+          <span style="display:inline-flex;align-items:center;gap:3px;">${ICONS.heart} ${c.likes}</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;">${ICONS.comment} ${c.comments}</span>
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:10px;">
+          <span style="display:inline-flex;align-items:center;gap:3px;">${ICONS.save} ${c.saved}</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;">${ICONS.share} ${c.shares}</span>
+        </span>
+      </div>
+    </div>
+    ` : ''}
+    ${c.porque ? `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;">Objetivo / Por quê? (Estratégia)</div>
+      <div style="background:var(--bg-card2);border-left:3px solid var(--gold);padding:8px 12px;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;border-radius:0 4px 4px 0;">${c.porque}</div>
+    </div>
+    ` : ''}
+    ${c.roteiro ? `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;">Roteiro / Estrutura</div>
+      <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-size:12px;line-height:1.7;color:var(--text);white-space:pre-wrap;font-family:monospace;">${c.roteiro}</div>
+    </div>
+    ` : ''}
+    ${c.slides ? `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;">Slides do Carrossel</div>
+      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;">
+        ${c.slides.split(/---+/g).map((slideText, idx) => {
+          const trimmed = slideText.trim();
+          if (!trimmed) return '';
+          return `
+            <div style="flex-shrink:0;width:160px;min-height:120px;background:var(--bg-card2);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;line-height:1.5;color:var(--text);display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);">
+              <div style="font-weight:700;color:var(--gold);margin-bottom:6px;font-size:9px;text-transform:uppercase;letter-spacing:.5px;">Slide ${idx+1}</div>
+              <div style="flex:1;white-space:pre-wrap;">${trimmed}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+    ` : ''}
+    ${c.legenda ? `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;">Legenda / Copy</div>
+      <div style="background:var(--bg-card2);border-radius:${getComputedStyle(document.documentElement).getPropertyValue('--radius-sm')};padding:12px;font-size:12px;line-height:1.7;color:var(--text);white-space:pre-wrap;">${c.legenda}</div>
+    </div>
+    ` : ''}
+  `;
+  const advBtn=document.getElementById('d-advance-btn');
+  if(next){ advBtn.textContent='Mover para "'+next+'" →'; advBtn.onclick=()=>{ moveStatus(id,next); closeModal('modal-detail'); }; advBtn.style.display=''; }
+  else advBtn.style.display='none';
+  document.getElementById('d-edit-btn').onclick=()=>openEditModal(id);
+  openModal('modal-detail');
+}
+
+function moveStatus(id, st){
+  const c=S.content.find(x=>x.id===id);
+  if(c){ c.status=st; persist(); toast(id+' → '+st); renderDashboard(); }
+}
+
+// ══════════ HELPERS ══════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+  if((e.ctrlKey||e.metaKey)&&e.key==='n'){ e.preventDefault(); openAdd(); }
+});
+
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(S.content,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='vertice_conteudo_'+today()+'.json'; a.click();
+}
+
+// ══════════ STORIES ══════════
+function setStoriesTab(tab, el) {
+  document.querySelectorAll('.stories-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  
+  const panels = ['sequencias', 'gabarito', 'garantias'];
+  panels.forEach(p => {
+    const panelEl = document.getElementById('stories-panel-' + p);
+    if (panelEl) {
+      panelEl.style.display = p === tab ? 'block' : 'none';
+    }
+  });
+}
+
+function copyStory(btn) {
+  const card = btn.closest('.story-card');
+  if (!card) return;
+  const body = card.querySelector('.story-body');
+  if (!body) return;
+  
+  const text = body.innerText || body.textContent;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Texto copiado com sucesso!');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✅ Copiado!';
+    setTimeout(() => {
+      btn.innerHTML = oldText;
+    }, 2000);
+  }).catch(err => {
+    console.error('Erro ao copiar texto: ', err);
+    toast('Erro ao copiar.');
+  });
+}
+
+// ══════════ TOKEN SETTINGS ══════════
+function openTokenModal() {
+  const currentToken = localStorage.getItem('vertice_ig_token') || IG_ACCESS_TOKEN;
+  document.getElementById('f-new-token').value = currentToken;
+  openModal('modal-token');
+}
+
+function saveNewToken() {
+  const newToken = document.getElementById('f-new-token').value.trim();
+  if (!newToken) {
+    alert('Por favor, insira um token válido.');
+    return;
+  }
+  localStorage.setItem('vertice_ig_token', newToken);
+  closeModal('modal-token');
+  toast('Token atualizado! Sincronizando métricas...');
+  loadInstagramMetrics();
+}
+
+// ══════════ START ══════════
+init();
+</script>
+</body>
+</html>
