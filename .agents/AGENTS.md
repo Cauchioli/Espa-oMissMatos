@@ -59,3 +59,12 @@ Sempre que gerar arquivos finais de documentos ou posts de carrossel, utilize o 
   - Ao interagir com o Claude, utilize instruções lógicas estruturadas por blocos ou checklists curtos e sequenciais, evitando explicações abstratas ou textos longos de apoio.
   - Respostas devem ser curtas, diretas ao ponto, com foco exclusivo no código ou no comando solicitado.
 
+---
+
+## 💼 8. Regras de Proposta Comercial Premium (Vértice OS)
+* **Uso Obrigatório de Template:** Qualquer solicitação de geração de proposta de vendas deve consumir o arquivo `templates/proposta_template.html` e substituir as variáveis de marca (`{{COLOR_PRIMARY}}`, `{{COLOR_ACCENT}}`, etc.) obtidas do `design-guide.md` e do contexto do cliente.
+* **Calibração de Impressão A4 de 1 Página:** Toda proposta deve ser configurada no CSS de impressão com `@page { size: A4; margin: 0; }` e `@media print` com dimensões fixas de `210mm x 297mm` e `padding` interno de segurança física (geralmente `20mm 22mm`). Isso evita quebras e garante a ocultação de URLs de rodapé padrão do navegador.
+* **Visual Boutique de Alta Autoridade:** Manter a combinação tipográfica de títulos serifados (`Cormorant Garamond`) com corpo em sans-serif (`Inter`), aplicando cores terrosas/douradas nos realces e mantendo um grid de cruzes de fundo apenas em tela.
+* **Playbook Comercial Oculto:** O painel de playbook e pitches de vendas (`.pitch-panel`) deve ser mantido no topo do HTML para visualização do consultor em tela, sendo categoricamente ocultado no print/PDF (via `display: none` em `@media print`).
+
+
