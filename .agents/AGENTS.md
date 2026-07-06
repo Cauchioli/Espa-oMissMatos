@@ -47,3 +47,15 @@ Sempre que gerar arquivos finais de documentos ou posts de carrossel, utilize o 
 * **Avatar e Header:** Cada slide de conteúdo (com exceção da capa se desejado) deve iniciar com a assinatura discreta do perfil no topo (`slide_lockup` com avatar pequeno redondo, handle e subtítulo de marca).
 * **Ausência de Emojis:** É terminantemente proibido inserir emojis nos slides ou nas legendas do post. Para destaques ou listas, utilize numerais serifados (`step-row`) ou marcadores gráficos SVG minimalistas.
 
+---
+
+## 🤖 7. Regras de Execução: Gemini vs. Claude
+* **Gemini (Modelo Principal - Foco em Contexto e Volume):**
+  - O Gemini é o motor principal da Vértice. Aproveite a sua janela de contexto gigante (2M tokens) para carregar notas estratégicas de playbooks inteiros do RAG ou do Obsidian sem a necessidade de resumos prévios.
+  - Priorize respostas longas, densas, com profundidade conceitual e exemplos práticos reais extraídos da história do negócio.
+  - Instrua o Gemini a formatar respostas usando o padrão Markdown limpo e tabelas comparativas para facilitar o escaneamento visual.
+* **Claude (Foco em Raciocínio de Código e Lógica Cirúrgica):**
+  - O Claude deve ser usado para tarefas lógicas complexas de desenvolvimento de scripts de automação, modificação estrutural de arquivos ou análise cirúrgica de dependências.
+  - Ao interagir com o Claude, utilize instruções lógicas estruturadas por blocos ou checklists curtos e sequenciais, evitando explicações abstratas ou textos longos de apoio.
+  - Respostas devem ser curtas, diretas ao ponto, com foco exclusivo no código ou no comando solicitado.
+
