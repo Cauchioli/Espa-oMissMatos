@@ -39,6 +39,16 @@ Se for setup limpo, seguir direto.
 
 ## Fase 1 — Escolha do perfil
 
+### 🌟 Verificação do Dossiê Done-For-You (DFY)
+Antes de fazer perguntas ao usuário no chat, verifique se o arquivo `dossie_diagnostico.md` existe na raiz do workspace.
+* **Se o arquivo `dossie_diagnostico.md` EXISTIR:** 
+  1. A I.A. deve pular toda a **Fase 2 (Entrevista)**.
+  2. Ler e processar os dados contidos no dossiê de diagnóstico.
+  3. Preencher silenciosamente todos os arquivos de memória na **Fase 3 (Preenchimento)** com o maior nível de riqueza e profundidade estratégica possível.
+  4. Gerar o arquivo `rag/rag_config.json` e aplicar o perfil escolhido de `CLAUDE.md`.
+  5. Pular direto para a **Fase 4 (Resumo)** e apresentar o resultado configurado.
+* **Se o arquivo NÃO existir:** Seguir com o fluxo normal fazendo a escolha do perfil e a entrevista manual por perguntas no chat.
+
 Perguntar qual perfil mais combina com o negócio:
 
 1. **Solopreneur / criador solo** — uma pessoa só, mistura de marca pessoal e negócio
@@ -53,6 +63,7 @@ A resposta determina qual template de `CLAUDE.md` aplicar (ver `templates/perfis
 ## Fase 2 — Entrevista
 
 Fazer essas perguntas em ordem, esperando a resposta de cada uma antes de seguir. Se vier resposta vaga, repetir uma vez pedindo concretude. Não insistir mais que isso — registrar o que vier.
+
 
 **Sobre o negócio:**
 1. "Como você chama o que você faz? (nome da empresa, ou seu nome se for marca pessoal)"
