@@ -103,7 +103,7 @@ body {
 /* Folha A4 da Proposta */
 .a4-page {
   width: 820px;
-  min-height: 1160px;
+  height: 1160px; /* Tamanho rígido A4 proporcional */
   background: #FFF;
   border: 1px solid var(--color-border);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
@@ -122,7 +122,7 @@ body {
   align-items: flex-start;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .brand-title {
@@ -315,7 +315,7 @@ body {
 @media print {
   html, body {
     width: 210mm;
-    height: 297mm;
+    height: 594mm; /* Altura total de 2 páginas A4 juntas */
     background: #FFF;
     margin: 0;
     padding: 0;
@@ -336,8 +336,11 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    page-break-after: avoid;
+    page-break-after: always;
     page-break-inside: avoid;
+  }
+  .a4-page:last-of-type {
+    page-break-after: avoid;
   }
   .header-row {
     margin-bottom: 24px;
@@ -388,7 +391,7 @@ body {
 <!-- PAINEL PLAYBOOK DE VENDAS (Oculto na Impressão) -->
 {{PITCH_PANEL_HTML}}
 
-<!-- FOLHA A4 (A PROPOSTA COMERCIAL) -->
+<!-- PÁGINA 1: CONTEXTO E ENTREGÁVEIS (VISUAL LAW) -->
 <div class="a4-page">
   <div>
     <!-- Cabeçalho -->
@@ -400,7 +403,7 @@ body {
       <div class="proposal-meta">
         Proposta Comercial: <span class="meta-value">{{PROPOSAL_NUMBER}}</span><br>
         Consultor: <span class="meta-value">{{CONSULTANT_NAME}}</span><br>
-        Validade: <span class="meta-value">{{VALIDITY_DAYS}}</span>
+        Data: <span class="meta-value">{{PROPOSAL_DATE}}</span>
       </div>
     </div>
 
@@ -415,11 +418,43 @@ body {
     <div class="module-grid">
       {{DELIVERABLES_CARDS_HTML}}
     </div>
+    
+    <div class="line-sep"></div>
+    
+    <h2 class="h2">Segurança de Dados e LGPD</h2>
+    <p class="body-p">Diferente de sistemas tradicionais em nuvem, a infraestrutura do Vértice OS opera de forma <strong>100% local e offline</strong>. O banco de dados semântico do RAG local armazena os seus documentos corporativos de forma criptografada na sua própria máquina física, eliminando qualquer risco de vazamento de dados estratégicos ou infração às diretrizes éticas e de conformidade.</p>
+  </div>
 
+  <div>
+    <div class="footer-row">
+      <span>{{BRAND_TITLE}} {{BRAND_TITLE_EM}} — {{BRAND_SUB}}</span>
+      <span>Página 1 de 2</span>
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 2: OFERTA EMPILHADA E ASSINATURAS -->
+<div class="a4-page">
+  <div>
+    <!-- Cabeçalho de Continuação -->
+    <div class="header-row">
+      <div>
+        <div class="brand-title">{{BRAND_TITLE}}<em>{{BRAND_TITLE_EM}}</em></div>
+        <div class="brand-sub">{{BRAND_SUB}}</div>
+      </div>
+      <div class="proposal-meta">
+        Ref: <span class="meta-value">{{PROPOSAL_NUMBER}}</span><br>
+        Validade: <span class="meta-value">{{VALIDITY_DAYS}}</span>
+      </div>
+    </div>
+
+    <h1 class="h1">Investimento & <em>Oferta Estruturada</em></h1>
+    <p class="body-p">Abaixo estão detalhados os valores de setup da infraestrutura e a estrutura de suporte mensal. O escopo opcional de Tração Local visa acelerar a captação de clientes de forma imediata após a instalação.</p>
+    
     <div class="line-sep"></div>
 
-    <!-- Valores -->
-    <h2 class="h2">Estrutura de Investimento</h2>
+    <!-- Tabela de Valores -->
+    <h2 class="h2">Investimento Detalhado</h2>
     <table class="proposal-table">
       <thead>
         <tr>
@@ -435,15 +470,15 @@ body {
   </div>
 
   <div>
-    <!-- Bloco de Preço Core Setup -->
+    <!-- Bloco de Preço Core Setup (Offer Stacking) -->
     <div class="price-card">
       <h3>{{PRICE_CARD_TITLE}}</h3>
       <div class="price-value">{{PRICE_VALUE}}</div>
       <div class="price-desc">{{PRICE_CARD_DESC}}</div>
     </div>
 
-    <!-- Assinaturas e Rodapé -->
-    <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+    <!-- Assinaturas -->
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
       <div class="signature-box">
         {{BRAND_TITLE}} {{BRAND_TITLE_EM}}<br>{{CONSULTANT_NAME}}
       </div>
@@ -452,9 +487,9 @@ body {
       </div>
     </div>
     
-    <div class="footer-row" style="margin-top: 40px;">
+    <div class="footer-row" style="margin-top: 30px;">
       <span>{{BRAND_TITLE}} {{BRAND_TITLE_EM}} — {{BRAND_SUB}}</span>
-      <span>Página 1 de 1</span>
+      <span>Página 2 de 2</span>
     </div>
   </div>
 </div>
