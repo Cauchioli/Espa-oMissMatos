@@ -2,6 +2,12 @@
 
 Este arquivo define as regras obrigatórias de comportamento e execução para os agentes de I.A. que interagem com o workspace do Vértice OS.
 
+> **Agente:** Antes de responder qualquer coisa, leia nesta ordem:
+> 1. `_memoria/00-ENTRADA.md` — mapa do sistema e checklist de início de sessão
+> 2. `_memoria/empresa.md`, `preferencias.md`, `estrategia.md` — contexto do negócio
+> 3. `.agents/PROTOCOLO.md` — ciclo de início, execução e encerramento
+> 4. `identidade/design-guide.md` — paleta, fontes e padrão visual
+
 ---
 
 ## 🤖 1. O Animus do Agente (Missão, Manifesto & Fidelidade)
@@ -27,11 +33,16 @@ Sempre que gerar arquivos finais de documentos ou posts de carrossel, utilize o 
 * **Validação Semântica:** Qualquer afirmação sem fonte direta ou verificável no acervo do cliente deve ser marcada com `[VERIFICAR]`. Fatos confirmados devem apontar a origem.
 * **Segurança de Dados:** Nunca insira dados confidenciais ou de clientes finais diretamente nos prompts públicos de IAs. Sempre utilize o servidor de RAG local.
 
----
-
-## 🔍 4. Uso do RAG Local
-* Para pesquisas profundas no acervo de notas, playbooks e reuniões, o agente deve priorizar o uso do motor RAG local na porta `8799`.
-* Sempre que o agente criar, modificar ou refinar notas estratégicas importantes, ele deve instruir o usuário a rodar o indexador incremental em background para atualizar a base semântica:
+## 🔍 4. RAG Local & Obsidian Anabolizado 2.0 (Grounding e Curadoria)
+* **Grounding Semântico Obrigatório:** Antes de gerar respostas sobre a empresa, produtos, processos ou decisões anteriores do usuário, o agente deve, obrigatoriamente, consultar o RAG local (porta `8799`).
+* **Citação de Fontes:** Toda informação resgatada do acervo deve ser ancorada e citada diretamente no corpo da resposta indicando o caminho do arquivo físico:
+  * Padrão de citação: `(FONTE: caminho/do/arquivo.md)`
+* **As 4 Válvulas Anti-Estouro (Invioláveis para o Assistente):**
+  1. **Fila de Triagem, não Criação Automática:** O agente não deve entupir o vault de notas criadas automaticamente. Sempre sugira a criação de uma nota jogando a proposta em um MOC existente ou gerando um rascunho de triagem para aprovação.
+  2. **Cota por Sessão:** Desenvolva e adicione conhecimento ao vault aos poucos. Limite-se a criar/curar no máximo 2 a 3 notas estruturadas por sessão de trabalho.
+  3. **Padrão > Instância (Notas-Tese):** Em vez de criar notas independentes para cada arquivo bruto ou caso específico, priorize extrair lições reutilizáveis e procedimentos gerais (Notas-Tese operacionais `OP-` e manuais). Informações únicas ou arquivadas devem ficar apenas no RAG, sem criar nós no vault.
+  4. **Portão de Qualidade:** Nunca publique ou consolide notas contendo dados incertos. Se houver informações pendentes, crie a nota com status de `rascunho`, a tag `#verificar` e as dúvidas marcadas com `[VERIFICAR]`.
+* **Atualização Semântica:** Sempre que criar ou modificar notas estratégicas importantes, instrua o usuário a rodar o indexador incremental para atualizar o cérebro:
   `python rag/rag_acervo.py index`
 
 ---
@@ -114,3 +125,28 @@ python rag/rag_server.py       # sobe o servidor (manter aberto em segundo plano
 
 **Regra de indexação:** sempre que um engine gerar arquivos novos em `identidade/`, `marketing/` ou `dados/`, instruir o usuário a rodar `python rag/rag_acervo.py index` para fechar o ciclo de retroalimentação.
 
+---
+
+## 💻 12. Workflow de Criação de Sites (Protocolo Frontend Design)
+
+Sempre que a tarefa envolver a criação ou refatoração de sites e landing pages (tanto para a Vértice quanto para clientes finais), siga este protocolo estruturado de desenvolvimento frontend:
+
+1. **Instalação de Plugins de Produtividade (Superpowers):**
+   Rode os comandos abaixo no terminal da I.A. para habilitar ferramentas extras de codificação:
+   ```bash
+   /plugin marketplace add obra/superpowers-marketplace
+   /plugin install superpowers@superpowers-marketplace
+   ```
+2. **Instalação do Plugin de Design Frontend:**
+   ```bash
+   /plugin install frontend-design@claude-plugins-official
+   ```
+3. **Leitura de Referência Estética:**
+   Sempre use as diretrizes de estética visual descritas no Claude Cookbook da Anthropic:
+   [Prompting for Frontend Aesthetics](https://github.com/anthropics/claude-cookbooks/blob/main/coding/prompting_for_frontend_aesthetics.ipynb)
+4. **Geração de Wireframes Primeiro (Sem Fricção):**
+   Antes de programar páginas completas ou mockups complexos, utilize uma IA (como o Gemini) ou ferramentas rápidas (como [bareminimum.design](https://bareminimum.design/)) para rascunhar **apenas os wireframes estruturais**. É muito mais fácil descrever, pivotar e alinhar mudanças na estrutura do que no código final.
+5. **Brainstorming e Plano de Design:**
+   Invoque a ferramenta `/superpowers:brainstorm` alimentando-a com o escopo de copy do projeto e os wireframes gerados. O sistema fará perguntas de esclarecimento e gerará um plano de design estruturado.
+6. **Codificação com o Design Frontend:**
+   Invoque `/frontend-design:frontend-design` passando o plano de design e o wireframe estrutural como referências para codificar uma página limpa, rápida e visualmente espetacular.

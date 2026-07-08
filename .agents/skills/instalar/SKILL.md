@@ -84,8 +84,8 @@ Fazer essas perguntas em ordem, esperando a resposta de cada uma antes de seguir
 10. "Tem logo? Se sim, joga o arquivo em `identidade/logo.png` (ou `.svg`) e me confirma."
 
 **Sobre RAG e Segundo Cérebro (Diferenciais Vértice OS):**
-11. "Você usa ou deseja configurar o Obsidian como seu Segundo Cérebro? Se sim, qual o caminho absoluto da pasta do seu Vault Obsidian no computador?"
-12. "Quais outras pastas ou caminhos no seu computador contêm arquivos que você deseja que a I.A. indexe e conheça (como PDFs de ebooks, playbooks em Markdown, transcrições de reuniões, etc.)?"
+11. "Você já usa o Obsidian como Segundo Cérebro? Se sim, me informe o caminho absoluto do seu Vault atual. Se não usa e deseja que eu crie um Vault modelo estruturado do zero na sua máquina, me informe o caminho absoluto da pasta onde quer criá-lo."
+12. "Quais outras pastas ou caminhos no seu computador contêm arquivos adicionais que você deseja que o RAG indexe (como PDFs de ebooks, playbooks em Markdown, transcrições de reuniões, etc.)?"
 
 ---
 
@@ -108,6 +108,12 @@ Preencher com base nas perguntas 7-8. Estrutura:
 
 ### `identidade/design-guide.md`
 Se o usuário forneceu cores/fontes/logo (perguntas 9-10), preencher os campos correspondentes. Se não, deixar como está e avisar.
+
+### Cópia e Setup do Segundo Cérebro (Obsidian)
+Se o usuário informou um caminho na pergunta 11:
+1. Certifique-se de que a pasta de destino existe. Se não existir, crie-a.
+2. Copie recursivamente todo o conteúdo de `templates/segundo-cerebro/` para a pasta indicada (incluindo subpastas e arquivos `.gitkeep`).
+3. Se a pasta já continha um Vault Obsidian existente, copie apenas os arquivos de regras (`00-ENTRADA.md`, `SCHEMA.md`, `PROTOCOLO.md` e `fechar-sessao/SKILL.md` como atalho) para a raiz do Vault do usuário para não bagunçar a organização dele.
 
 ### `rag/rag_config.json`
 Criar ou atualizar o arquivo de configuração `rag/rag_config.json` com a seguinte estrutura:
@@ -136,6 +142,7 @@ Mostrar pro usuário o que foi configurado:
 ✓ Tom de voz: _memoria/preferencias.md
 ✓ Foco atual: _memoria/estrategia.md
 ✓ Marca: identidade/design-guide.md  [preenchida | em branco]
+✓ Segundo Cérebro (Obsidian): Configurado e estruturado no caminho [caminho]
 ✓ RAG local: rag/rag_config.json configurado
 ✓ CLAUDE.md adaptado pro perfil [perfil]
 ```
