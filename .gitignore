@@ -22,8 +22,17 @@ env/
 Thumbs.db
 *.log
 
-# Bancos de dados locais / caches de uso (opcional, mantendo apenas templates do git se necessário)
-# Se o cliente rodar o painel nesta mesma pasta, estas linhas evitam que ele envie seus dados de clientes para o git
-# app/crm_database.json
-# app/instagram_cache.json
-# app/ideas_database.json
+# Bancos de dados locais / caches de uso
+app/crm_database.json
+app/instagram_cache.json
+app/ideas_database.json
+
+# Customizações locais do cliente
+identidade/messaging/*
+!identidade/messaging/.gitkeep
+identidade/logo.png
+identidade/logo.svg
+
+# Pastas de trabalho dinâmicas (geradas no uso)
+clientes/
+saidas/
