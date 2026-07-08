@@ -1,5 +1,6 @@
-# Dossiê de Diagnóstico — [NOME DO CLIENTE]
-> Preencher este arquivo ANTES de rodar `/instalar`. Quando ele existir na raiz, o setup pula a entrevista e configura o sistema automaticamente com profundidade máxima.
+# Dossiê de Diagnóstico — [NOME DO CLIENTE / EMPRESA]
+
+> **Como usar:** Preencha este arquivo com as informações do negócio e coloque-o na raiz da pasta do projeto com o nome `dossie_diagnostico.md`. Quando o arquivo existir, o `/instalar` lê tudo aqui e configura o sistema automaticamente — sem entrevista.
 
 ---
 
@@ -13,7 +14,7 @@
 
 ---
 
-## 2. O Negócio (O que faz e para quem)
+## 2. O Negócio
 
 **Em uma frase, o que a empresa entrega:**
 > 
@@ -38,13 +39,13 @@
 
 - **Tamanho da equipe:**  
 - **Papéis existentes:**  
-- **O que o fundador ainda faz que deveria delegar:**  
+- **O que o dono ainda faz que deveria delegar:**  
 
 ---
 
 ## 4. Tom de Voz e Identidade
 
-**Exemplo real de escrita do fundador** (colar legenda, email ou trecho de post):
+**Exemplo real de escrita** (colar legenda, email ou trecho de post):
 > 
 
 **O que gera ranço / o que NUNCA usar:**
@@ -80,7 +81,7 @@
 
 ---
 
-## 7. Oferta Ativa (o produto em foco agora)
+## 7. Oferta Ativa
 
 - **Nome da oferta:** 
 - **Promessa central (resultado que entrega):** 
@@ -100,9 +101,9 @@
 
 ---
 
-## 9. Perfil do Sistema
+## 9. Tipo de Negócio
 
-**Tipo de negócio** (marcar um):
+Marcar um:
 - [ ] Solopreneur / marca pessoal
 - [ ] Freelancer (atende clientes por projeto)
 - [ ] Agência / consultoria (equipe pequena)
@@ -110,6 +111,6 @@
 
 ---
 
-## 10. Observações do Consultor
+## 10. Observações
 
-> (Campo livre para o consultor Vértice anotar insights da reunião de diagnóstico que não se encaixam nos campos acima — contexto emocional, urgências não ditas, dinâmicas de equipe, etc.)
+> (Campo livre para qualquer informação que não se encaixou acima — contexto de mercado, histórico relevante, nuances do negócio, o que for importante a IA saber.)

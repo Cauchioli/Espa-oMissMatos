@@ -76,13 +76,13 @@ Depois abrir a IA e digitar: `/instalar`
 
 ---
 
-### Opção B — Setup DFY (Done-For-You pelo Consultor Vértice)
-O consultor faz a reunião de diagnóstico com o cliente, preenche o `templates/dossie_diagnostico_template.md`, renomeia para `dossie_diagnostico.md` e coloca na raiz. O `/instalar` detecta o arquivo e configura tudo sem entrevista — máxima profundidade, mínimo atrito.
+### Opção B — Setup com Dossiê (sem entrevista)
+Preencha o `templates/dossie_diagnostico_template.md` com as informações do negócio, renomeie para `dossie_diagnostico.md` e coloque na raiz. O `/instalar` detecta o arquivo e configura tudo automaticamente — sem entrevista, máxima profundidade.
 
 ```bash
-# Após preencher o dossiê:
+# Copiar e preencher:
 cp templates/dossie_diagnostico_template.md dossie_diagnostico.md
-# Depois: /instalar na IA
+# Editar o arquivo com os dados do negócio, depois: /instalar na IA
 ```
 
 ---
@@ -123,7 +123,7 @@ Com o RAG ativo, todos os engines consultam o acervo de documentos do cliente an
 |---|---|---|
 | **Doug** | Copywriting High-Ticket, storytelling, headlines | "Doug, reescreve esse texto..." |
 | **Alex** | Ofertas Grand Slam, Equação de Valor (Hormozi) | "Alex, analisa minha oferta..." |
-| **Valentina** | Marca pessoal autêntica, Instagram, tom de voz | "Valentina, como posiciono minha marca..." |
+| **Valentina** | Marca pessoal autêntica, Instagram, tom de voz único | "Valentina, como posiciono minha marca..." |
 
 ---
 
