@@ -141,9 +141,18 @@ Mostrar pro usuário o que foi configurado:
 ```
 
 Se o RAG estiver configurado, instruir:
-> "Para fazer a indexação inicial do seu acervo no RAG, execute o seguinte comando no terminal:
-> `python rag/rag_acervo.py index`
-> Eu também farei buscas automáticas no seu RAG nas próximas tarefas."
+> "Para ativar a memória de longo prazo, execute no terminal:
+> `python install_rag.py`   ← instala dependências
+> `python rag/rag_acervo.py index`   ← indexa seu acervo
+> `python rag/rag_server.py`   ← sobe o servidor (manter aberto em segundo plano)
+>
+> Com o servidor ativo, todos os engines do Vértice OS vão buscar contexto
+> no seu segundo cérebro automaticamente antes de criar qualquer coisa."
+
+Se o usuário disser que NÃO quer usar RAG (ex: computador sem recursos ou setup inicial básico):
+> "Tudo bem — o Vértice OS funciona sem o RAG. Os engines vão usar apenas
+> os arquivos de _memoria/ como contexto. Quando quiser ativar a memória
+> completa, é só rodar `python install_rag.py` no futuro."
 
 ---
 
@@ -176,24 +185,44 @@ Se a pasta já tem nome próprio (não genérico), pular essa fase.
 
 ## Fase 6 — Próximos passos
 
-> "Pronto. O MazyOS já te conhece.
+> "Pronto. O Vértice OS já te conhece.
 >
-> No começo de cada sessão de trabalho, roda `/abrir` — eu carrego tudo
-> que combinamos aqui antes da primeira frase. Quando quiser fazer um
-> carrossel, plano de SEO, campanha ou qualquer outra coisa, é só
-> chamar a skill que cabe.
+> Roda `/abrir` no começo de cada sessão — eu carrego todo o contexto
+> antes da primeira frase.
+>
+> A ordem natural de uso do sistema é:
+>
+> 1. `/messaging-engine` — constrói sua mensagem, tese e vocabulário proprietário
+>    (tudo o mais fica mais fácil depois disso)
+>
+> 2. `/content-os` — monta o calendário do mês conectado à sua oferta
+>
+> 3. `/sales-engine` — cria o roteiro de call, SPIN e follow-up
+>
+> 4. `/client-success` — estrutura a entrega e o plano de 90 dias
+>
+> 5. `/authority-engine` — expande uma ideia sua em palestra, artigo e livro
+>
+> 6. `/growth-engine` — diagnóstico de gargalos e prioridades de escala
+>
+> 7. `/research-engine` — transforma comentários e reviews em inteligência de copy
+>
+> Para criar conteúdo visual: `/carrossel`, `/publicar-tema`, `/aprovar-post`
+> Para SEO e tráfego pago: `/seo`, `/anuncio-google`, `/relatorio-ads`
+> Para vendas: `/proposta-comercial` + `/sales-engine`
 >
 > Você mencionou que repete '<resposta da pergunta 8>' toda semana.
-> Quando quiser tirar isso das costas de vez, roda `/mapear-rotinas`
-> que eu transformo em skill própria."
+> Roda `/mapear-rotinas` quando quiser transformar isso em skill automática."
 
-Se o usuário quiser publicar o trabalho no GitHub, mencionar `/salvar`.
+Se o usuário quiser salvar e versionar no GitHub, mencionar `/salvar`.
 
 ---
 
 ## Regras
 
 - Não inventar dados — se a resposta for vaga, registrar do jeito que veio (ou deixar placeholder claro)
-- Não escrever "este arquivo será preenchido pelo /instalar" nos arquivos finais — esse aviso só existe nos placeholders, sai depois do /instalar
-- O setup deve durar 5-7 minutos no máximo. Se o usuário estiver enrolando numa pergunta, registra o que tem e segue
+- Não escrever "este arquivo será preenchido pelo /instalar" nos arquivos finais
+- O setup deve durar 5-7 minutos no máximo — registrar o que veio e seguir
 - Não fazer perguntas extras além das listadas acima sem motivo claro
+- O RAG é OPCIONAL: se o usuário não quiser ou não tiver recursos, o sistema funciona sem ele
+- Nunca bloquear o setup por falta do RAG — é um bônus, não um requisito

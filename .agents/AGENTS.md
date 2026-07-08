@@ -66,6 +66,51 @@ Sempre que gerar arquivos finais de documentos ou posts de carrossel, utilize o 
 * **Uso Obrigatório de Template:** Qualquer solicitação de geração de proposta de vendas deve consumir o arquivo `templates/proposta_template.html` e substituir as variáveis de marca (`{{COLOR_PRIMARY}}`, `{{COLOR_ACCENT}}`, etc.) obtidas do `design-guide.md` e do contexto do cliente.
 * **Calibração de Impressão A4 de 1 Página:** Toda proposta deve ser configurada no CSS de impressão com `@page { size: A4; margin: 0; }` e `@media print` com dimensões fixas de `210mm x 297mm` e `padding` interno de segurança física (geralmente `20mm 22mm`). Isso evita quebras e garante a ocultação de URLs de rodapé padrão do navegador.
 * **Visual Boutique de Alta Autoridade:** Manter a combinação tipográfica de títulos serifados (`Cormorant Garamond`) com corpo em sans-serif (`Inter`), aplicando cores terrosas/douradas nos realces e mantendo um grid de cruzes de fundo apenas em tela.
-* **Playbook Comercial Oculto:** O painel de playbook e pitches de vendas (`.pitch-panel`) deve ser mantido no topo do HTML para visualização do consultor em tela, sendo categoricamente ocultado no print/PDF (via `display: none` em `@media print`).
+* **Playbook Comercial Oculto:** O painel de playbook e pitches de vendas (`.pitch-panel`) deve ser mantido no topo do HTML para visualização do consultor em tela, sendo categoricamente ocultado no print/PDF (via `display: none` em `@media print`).---
 
+## 🔁 9. Engines Estratégicos — Protocolo de Uso
+
+O Vértice OS conta com 7 engines estratégicos. Eles são skills que, quando acionadas, leem automaticamente os arquivos de `_memoria/` e `identidade/` como contexto antes de gerar qualquer saída:
+
+| Engine | Trigger | O que faz |
+|---|---|---|
+| `/messaging-engine` | "cria minha mensagem", "quero meu posicionamento" | Manifesto, tese, vocabulário, analogias, frases de autoridade |
+| `/content-os` | "calendário de conteúdo", "o que postar" | Calendário 30 dias + pilares + reels + stories + emails |
+| `/sales-engine` | "roteiro de vendas", "script de call" | Diagnóstico, SPIN, objeções, follow-up, expansão |
+| `/client-success` | "onboarding", "plano de entrega" | Plano 90 dias, quick wins, NPS, template de case |
+| `/authority-engine` | "quero construir autoridade", "artigo longo" | Manifesto, contrarian takes, framework, palestra, livro |
+| `/growth-engine` | "onde investir energia", "qual o gargalo" | Diagnóstico do negócio + 3 alavancas + plano 90 dias |
+| `/research-engine` | "o que o mercado está falando" | Ammunition de copy, gaps de concorrente, ideias de oferta |
+
+**Ordem recomendada de primeiro uso:** messaging-engine → content-os → sales-engine → client-success → authority-engine → growth-engine → research-engine.
+
+---
+
+## 🎭 10. Agentes Especializados
+
+O Vértice OS possui agentes com identidades e expertise específicas. Invocá-los via chat usando o nome ou o papel descrito:
+
+* **Doug Demarco** — Diretor de Copywriting. Especialista em copy de elite, storytelling e posicionamento de marca para produtos High-Ticket. Chamar para reescrever textos de carrossel, headlines, emails de venda ou qualquer copy que precise de narrativa forte.
+* **Alex Hormozi** — Especialista em Ofertas Grand Slam ($100M Offers). Chamar para diagnosticar uma oferta existente, aplicar a Equação de Valor e reconstruir o produto como uma oferta irresistível. Diz: "Me conta o que você está vendendo hoje. Vamos dissecar isso."
+
+---
+
+## 🧠 11. RAG Local — Opcional mas Recomendado
+
+O RAG (memória de longo prazo) é um servidor de busca semântica 100% local (porta `8799`) que indexa o acervo completo de documentos do usuário e alimenta os engines com contexto real do negócio.
+
+**É OPCIONAL.** O sistema funciona sem o RAG — os engines usam apenas `_memoria/` como contexto. O RAG amplifica a qualidade das saídas quando ativo.
+
+**Setup em 3 comandos:**
+```bash
+python install_rag.py          # instala dependências (uma vez só)
+python rag/rag_acervo.py index # indexa o acervo (repetir quando houver novos arquivos)
+python rag/rag_server.py       # sobe o servidor (manter aberto em segundo plano)
+```
+
+**Quando o RAG está ativo**, os engines fazem consultas semânticas no acervo antes de gerar saídas e citam a fonte dos trechos recuperados.
+
+**Quando o RAG está offline**, os engines avisam e prosseguem apenas com `_memoria/` — sem travar o fluxo de trabalho.
+
+**Regra de indexação:** sempre que um engine gerar arquivos novos em `identidade/`, `marketing/` ou `dados/`, instruir o usuário a rodar `python rag/rag_acervo.py index` para fechar o ciclo de retroalimentação.
 
