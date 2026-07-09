@@ -101,7 +101,7 @@ O Vértice OS conta com 7 engines estratégicos. Eles são skills que, quando ac
 
 ## 🎭 10. Squad Estratégico — Agentes Especializados
 
-O Vértice OS opera com um squad de agentes em arquitetura de Tiers. O ponto de entrada preferencial é o **Orchestrator** — mas chamar agentes diretamente também funciona.
+O Vértice OS opera com um squad de 3 agentes em arquitetura de Tiers. O ponto de entrada preferencial é o **Orchestrator** — mas chamar agentes diretamente também funciona.
 
 ### Arquitetura do Squad
 
@@ -110,19 +110,17 @@ TIER 0 — ORCHESTRATOR
   └── Recebe a demanda → analisa → delega para o especialista certo
 
 TIER 1 — ESPECIALISTAS
-  ├── Doug Demarco    → Copy, nicho, promessa, método, bio
-  ├── Alex Hormozi    → Oferta, Equação de Valor, gargalo, leads, garantia
-  ├── Tay Dantas      → DNA de marca, Marca de Duas Palavras, escada de valor
-  └── Valentina       → Instagram, marca pessoal com alma, performance de posts
+  ├── Doug        → Copy, nicho, promessa, método, bio
+  ├── Alex        → Oferta, Equação de Valor, gargalo, leads, garantia
+  └── Valentina   → DNA de marca, Marca de Duas Palavras, escada de valor, Instagram
 ```
 
 ### Como chamar
 
 * **Orchestrator** — Ponto de entrada para qualquer demanda estratégica. Diga o problema, ele define quem chama e em qual ordem. Commands: `scan-completo`, `executar-squad`, `diagnostico-rapido`.
-* **Doug Demarco** — Copy, posicionamento, nicho, promessa, bio magnética, carrossel. Commands: `dissecar-skill`, `comprimir-nicho`, `desenhar-promessa`, `estruturar-metodo`, `otimizar-bio`, `reescrever-copy`.
-* **Alex Hormozi** — Oferta, Equação de Valor, gargalo, leads, precificação. Commands: `criar-oferta-grand-slam`, `auditoria-de-valor`, `diagnosticar-gargalo`, `estrategia-leads`, `estruturar-garantia`, `precificar-por-valor`.
-* **Tay Dantas** — DNA de marca pessoal, Marca de Duas Palavras, atributos de percepção, escada de valor. Commands: `construir-dna`, `auditoria-percepcao`, `estruturar-escada-valor`, `planejar-conteudo`, `calibrar-preco`.
-* **Valentina** — Instagram, história do fundador, tom de voz autêntico, análise de performance. Lê `app/instagram_cache.json` para embasar análises em dados reais.
+* **Doug** — Copy, posicionamento, nicho, promessa, bio magnética, carrossel. Commands: `dissecar-skill`, `comprimir-nicho`, `desenhar-promessa`, `estruturar-metodo`, `otimizar-bio`, `reescrever-copy`.
+* **Alex** — Oferta, Equação de Valor, gargalo, leads, precificação. Commands: `criar-oferta-grand-slam`, `auditoria-de-valor`, `diagnosticar-gargalo`, `estrategia-leads`, `estruturar-garantia`, `precificar-por-valor`.
+* **Valentina** — DNA de marca pessoal, Marca de Duas Palavras, atributos de percepção, escada de valor, Instagram e tom de voz autêntico. Commands: `construir-dna`, `auditoria-percepcao`, `estruturar-escada-valor`, `calibrar-preco`, `diagnosticar-identidade`, `planejar-conteudo`, `analisar-performance`, `calibrar-tom`.
 
 ---
 
@@ -193,7 +191,8 @@ Ao concluir qualquer engine ou tarefa significativa, o agente sugere proativamen
 | `/growth-engine` | `/sales-engine` ou `/content-os` |
 | `/proposta-comercial` | `/sales-engine` (para preparar o fechamento) |
 | `Doug: reescrever-copy` | `Alex: auditoria-de-valor` (se for oferta) |
-| `Alex: criar-oferta-grand-slam` | `Doug: desenhar-promessa` + `Tay: construir-dna` |
+| `Alex: criar-oferta-grand-slam` | `Doug: desenhar-promessa` + `Valentina: construir-dna` |
+| `Valentina: construir-dna` | `Doug: desenhar-promessa` |
 | Sessão longa de estratégia | `/fechar-sessao` |
 
 A sugestão deve ser curta — 1 linha — e aparecer após o entregável principal.
