@@ -40,6 +40,26 @@ Só atualizar o que realmente mudou. Nunca sobrescrever informação correta com
 
 ---
 
+## Etapa 2.5 — Captura de Aprendizado (Gotchas)
+
+Perguntar ao usuário em 1 linha:
+> "Houve alguma correção de estilo, tom ou fato nesta sessão que deve ser lembrada?"
+
+- **Se sim:** Criar registro em `.agents/aprendizado/gotchas.md` com o padrão:
+  ```
+  ## GOTCHA-[N]
+  - **Padrão problemático:** [o que foi feito de errado]
+  - **Contexto:** [onde se aplica]
+  - **Por que é um erro:** [a razão]
+  - **Alternativa correta:** [o que fazer no lugar]
+  - **Ocorrências:** 1
+  - **Registrado em:** [data]
+  - **Fonte:** [quem corrigiu]
+  ```
+- **Se não:** Pular silenciosamente.
+
+---
+
 ## Etapa 3 — Criar Nota de Sessão no Obsidian (opcional)
 
 Se o usuário quiser registrar a sessão no vault, criar nota em `90-historico/`:
