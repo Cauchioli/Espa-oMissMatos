@@ -1,11 +1,8 @@
 {
-  "obsidian_vault_path": "C:/Users/WINDOWS11/Documents/Memorias-Pessoal",
+  "obsidian_vault_path": "./segundo-cerebro",
   "additional_index_paths": [
-    "C:/Users/WINDOWS11/Documents/VerticeOS/_memoria",
-    "C:/Users/WINDOWS11/Documents/VerticeOS/identidade",
-    "C:/Users/WINDOWS11/Documents/VerticeOS/marketing",
-    "C:/Users/WINDOWS11/Documents/VerticeOS/dados",
-    "C:/Users/WINDOWS11/Documents/Pessoal/00_Contexto_IA",
-    "C:/Users/WINDOWS11/Documents/Pessoal/02_Meus_Produtos_e_Vendas"
+    "./_memoria",
+    "./identidade",
+    "./dados"
   ]
 }

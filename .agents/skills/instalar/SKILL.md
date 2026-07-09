@@ -81,11 +81,9 @@ Fazer essas perguntas em ordem, esperando a resposta de cada uma antes de seguir
 
 **Sobre identidade visual:**
 9. "Tem identidade visual definida ou tá no zero? Se tem, me passa as cores principais e a fonte."
-10. "Tem logo? Se sim, joga o arquivo em `identidade/logo.png` (ou `.svg`) e me confirma."
-
 **Sobre RAG e Segundo Cérebro (Diferenciais Vértice OS):**
 11. "Você já usa o Obsidian como Segundo Cérebro? Se sim, me informe o caminho absoluto do seu Vault atual. Se não usa e deseja que eu crie um Vault modelo estruturado do zero na sua máquina, me informe o caminho absoluto da pasta onde quer criá-lo."
-12. "Quais outras pastas ou caminhos no seu computador contêm arquivos adicionais que você deseja que o RAG indexe (como PDFs de ebooks, playbooks em Markdown, transcrições de reuniões, etc.)?"
+12. "Eu criei uma pasta chamada 'dados' na raiz do Vértice OS para você jogar seus documentos soltos (PDFs, DOCX, planilhas). Deseja indexar alguma outra pasta de documentos do seu computador além desta? Se sim, me informe os caminhos absolutos separados por vírgula."
 
 ---
 
@@ -121,8 +119,9 @@ Criar ou atualizar o arquivo de configuração `rag/rag_config.json` com a segui
 {
   "obsidian_vault_path": "[resposta da 11]",
   "additional_index_paths": [
-    "[caminho 1 da resposta 12]",
-    "[caminho 2 da resposta 12]"
+    "./_memoria",
+    "./identidade",
+    "./dados"[se a resposta 12 tiver caminhos extras, adicione-os aqui como caminhos absolutos]
   ]
 }
 ```
