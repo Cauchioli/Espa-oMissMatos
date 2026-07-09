@@ -106,47 +106,32 @@ O Vértice OS possui agentes com identidades e expertise específicas. Invocá-l
 
 ---
 
-## 🧠 11. RAG Local — Opcional mas Recomendado
+## 🧠 11. RAG Local — Verificado Sempre, Degrada Graciosamente
 
-O RAG (memória de longo prazo) é um servidor de busca semântica 100% local (porta `8799`) que indexa o acervo completo de documentos do usuário e alimenta os engines com contexto real do negócio.
+O RAG é um servidor de busca semântica 100% local (porta `8799`) que indexa o Segundo Cérebro, a pasta `dados/`, `_memoria/` e qualquer outra pasta configurada. Quando ativo, os engines conhecem tudo que o usuário já escreveu, decidiu ou armazenou.
 
-**É OPCIONAL.** O sistema funciona sem o RAG — os engines usam apenas `_memoria/` como contexto. O RAG amplifica a qualidade das saídas quando ativo.
+**Verificação obrigatória no início de cada sessão:** `GET http://127.0.0.1:8799/health`
+- **Online:** os engines consultam o acervo semanticamente antes de gerar qualquer saída e citam a `FONTE:` do trecho recuperado.
+- **Offline:** o agente avisa em 1 linha e opera apenas com `_memoria/`. O fluxo **não para** — mas a qualidade das respostas é reduzida. Instruir o usuário a subir o servidor.
 
-**Setup em 3 comandos:**
+**Setup (feito uma única vez pelo `/instalar`):**
 ```bash
-python install_rag.py          # instala dependências (uma vez só)
-python rag/rag_acervo.py index # indexa o acervo (repetir quando houver novos arquivos)
-python rag/rag_server.py       # sobe o servidor (manter aberto em segundo plano)
+python install_rag.py          # instala dependências
+python rag/rag_acervo.py index # indexa o Segundo Cérebro e dados/
+python rag/rag_server.py       # sobe o servidor (manter aberto)
 ```
 
-**Quando o RAG está ativo**, os engines fazem consultas semânticas no acervo antes de gerar saídas e citam a fonte dos trechos recuperados.
-
-**Quando o RAG está offline**, os engines avisam e prosseguem apenas com `_memoria/` — sem travar o fluxo de trabalho.
-
-**Regra de indexação:** sempre que um engine gerar arquivos novos em `identidade/`, `marketing/` ou `dados/`, instruir o usuário a rodar `python rag/rag_acervo.py index` para fechar o ciclo de retroalimentação.
+**Regra de indexação:** sempre que arquivos novos forem criados em `segundo-cerebro/`, `dados/`, `identidade/` ou `_memoria/`, o agente instrui o usuário a rodar `python rag/rag_acervo.py index` para fechar o ciclo.
 
 ---
 
-## 💻 12. Workflow de Criação de Sites (Protocolo Frontend Design)
+## 💻 12. Workflow de Criação de Sites (Protocolo Frontend)
 
-Sempre que a tarefa envolver a criação ou refatoração de sites e landing pages (tanto para a Vértice quanto para clientes finais), siga este protocolo estruturado de desenvolvimento frontend:
+Sempre que a tarefa envolver criação ou refatoração de sites e landing pages, siga este protocolo:
 
-1. **Instalação de Plugins de Produtividade (Superpowers):**
-   Rode os comandos abaixo no terminal da I.A. para habilitar ferramentas extras de codificação:
-   ```bash
-   /plugin marketplace add obra/superpowers-marketplace
-   /plugin install superpowers@superpowers-marketplace
-   ```
-2. **Instalação do Plugin de Design Frontend:**
-   ```bash
-   /plugin install frontend-design@claude-plugins-official
-   ```
-3. **Leitura de Referência Estética:**
-   Sempre use as diretrizes de estética visual descritas no Claude Cookbook da Anthropic:
-   [Prompting for Frontend Aesthetics](https://github.com/anthropics/claude-cookbooks/blob/main/coding/prompting_for_frontend_aesthetics.ipynb)
-4. **Geração de Wireframes Primeiro (Sem Fricção):**
-   Antes de programar páginas completas ou mockups complexos, utilize uma IA (como o Gemini) ou ferramentas rápidas (como [bareminimum.design](https://bareminimum.design/)) para rascunhar **apenas os wireframes estruturais**. É muito mais fácil descrever, pivotar e alinhar mudanças na estrutura do que no código final.
-5. **Brainstorming e Plano de Design:**
-   Invoque a ferramenta `/superpowers:brainstorm` alimentando-a com o escopo de copy do projeto e os wireframes gerados. O sistema fará perguntas de esclarecimento e gerará um plano de design estruturado.
-6. **Codificação com o Design Frontend:**
-   Invoque `/frontend-design:frontend-design` passando o plano de design e o wireframe estrutural como referências para codificar uma página limpa, rápida e visualmente espetacular.
+1. **Entender o objetivo:** Perguntar qual é o objetivo da página (captura, vendas, institucional) e quem é o público antes de escrever uma linha de código.
+2. **Plano de design primeiro:** Descrever em texto a estrutura da página (seções, hierarquia, CTA principal) e obter aprovação antes de codificar. Mudanças de estrutura em texto são 10x mais rápidas que em código.
+3. **Stack padrão:** HTML + CSS Vanilla + JavaScript puro. Sem frameworks desnecessários. Carregar fontes via Google Fonts (Cormorant Garamond + Inter).
+4. **Paleta e tokens:** Usar obrigatoriamente os tokens do `identidade/design-guide.md` do cliente. Se não preenchido, usar o padrão Vértice OS (fundo `#F9F8F6`, dourado `#8B6914`, título `#111827`).
+5. **Mobile-first:** Todo CSS deve ser escrito para mobile (max-width: 768px) e expandido para desktop.
+6. **Entregável:** O arquivo HTML final vai para `saidas/sites/` dentro do repositório.

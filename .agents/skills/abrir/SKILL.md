@@ -1,4 +1,4 @@
-﻿---
+---
 name: abrir
 description: >
   Abre uma sessão de trabalho carregando a memória do negócio (empresa, preferências, estratégia, identidade)
@@ -22,20 +22,27 @@ Curto e direto. O objetivo é carregar contexto e devolver uma síntese de uma f
    > "Vi que `_memoria/<arquivo>.md` ainda não foi preenchido. Quer rodar `/instalar` agora?"
    E parar.
 
-3. Se tudo estiver preenchido, devolver UMA mensagem curta no formato:
+3. **Verificar o RAG:** Testar `GET http://127.0.0.1:8799/health`
+   - **Online:** continuar normalmente. O Segundo Cérebro está acessível.
+   - **Offline:** adicionar ao final da mensagem de abertura, em 1 linha:
+     `[RAG offline — memória de longo prazo inativa. Para ativar: python rag/rag_server.py]`
+
+4. Se tudo estiver preenchido, devolver UMA mensagem curta no formato:
 
 ```
 [Nome do negócio] — [o que faz em 5-8 palavras]
 Foco atual: [prioridade da estratégia, em uma frase]
 Tom: [resumo de 3-4 palavras do tom de voz]
+[linha do RAG, se offline]
 
 Pronto. O que vamos fazer?
 ```
 
-4. Não listar quais arquivos foram lidos. Não confirmar leitura. Só usar o contexto.
+5. Não listar quais arquivos foram lidos. Não confirmar leitura. Só usar o contexto.
 
 ## Regras
 
-- Resposta tem que caber em 5 linhas no terminal
+- Resposta tem que caber em 6 linhas no terminal (incluindo linha do RAG se offline)
 - Não fazer perguntas além de "o que vamos fazer?"
 - Se o `design-guide.md` estiver em branco, não mencionar — só vira problema quando alguma skill visual for chamada
+- A verificação do RAG é sempre silenciosa — só aparece na resposta se estiver offline

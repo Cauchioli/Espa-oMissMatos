@@ -71,15 +71,15 @@ fontes: []
 
 ## Etapa 4 — Git Commit do Vault
 
-Se o Obsidian tiver git configurado, rodar:
+Ler `rag/rag_config.json` para obter o valor de `obsidian_vault_path`. Se o caminho existir e o vault tiver git configurado (`.git/` presente na pasta), rodar:
 
 ```bash
-cd [caminho do vault obsidian]
+cd [obsidian_vault_path lido do rag_config.json]
 git add .
 git commit -m "Sessão [data]: [resumo de 1 linha]"
 ```
 
-Se não tiver git no vault, pular esta etapa silenciosamente.
+Se o `rag_config.json` não existir, o caminho for `./segundo-cerebro` (padrão relativo) ou o vault não tiver git, pular esta etapa silenciosamente e registrar no resumo: `vault sem git configurado — pulado`.
 
 ---
 
