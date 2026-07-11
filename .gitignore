@@ -36,3 +36,15 @@ identidade/logo.svg
 # Pastas de trabalho dinâmicas (geradas no uso)
 clientes/
 saidas/
+
+# Pastas de sistema do VerticeOS (ignorar no repositório do cliente)
+.agents/
+_memoria/
+app/
+dados/
+identidade/
+marketing/
+rag/
+scripts/
+templates/
+install_rag.py
