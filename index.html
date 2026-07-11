@@ -40,11 +40,18 @@
         }
 
         /* Reset e Configurações Básicas */
-        * {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             scroll-behavior: smooth;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -52,7 +59,6 @@
             background-color: var(--color-bg-light);
             color: var(--color-text-dark);
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
         img {
@@ -1528,6 +1534,14 @@
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+            }
+
+            /* Trazer setas do slider para dentro da tela para evitar overflow lateral no mobile */
+            .slider-btn.prev {
+                left: 15px !important;
+            }
+            .slider-btn.next {
+                right: 15px !important;
             }
         }
 
