@@ -1399,15 +1399,111 @@
         }
 
         @media (max-width: 768px) {
+            .nav-container {
+                position: relative;
+            }
+
             .nav-links {
-                display: none; /* Seria ativado via JS */
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 85px; /* Altura do header */
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 85px);
+                background-color: rgba(250, 249, 246, 0.98); /* Off-white Japandi */
+                backdrop-filter: blur(15px); /* Blur dinâmico de fundo */
+                -webkit-backdrop-filter: blur(15px);
+                padding: 40px 30px;
+                gap: 20px;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+                z-index: 999;
+                border-top: 1px solid var(--color-border);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-links li {
+                width: 100%;
+                text-align: center;
+                opacity: 0;
+                transform: translateY(15px);
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            }
+
+            .nav-links.active li {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .nav-links.active li:nth-child(1) { transition-delay: 0.05s; }
+            .nav-links.active li:nth-child(2) { transition-delay: 0.1s; }
+            .nav-links.active li:nth-child(3) { transition-delay: 0.15s; }
+            .nav-links.active li:nth-child(4) { transition-delay: 0.2s; }
+            .nav-links.active li:nth-child(5) { transition-delay: 0.25s; }
+            .nav-links.active li:nth-child(6) { transition-delay: 0.3s; }
+
+            .nav-links a {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--color-primary);
+                display: block;
+                padding: 10px 0;
+            }
+
+            .nav-links a::after {
+                display: none; /* Desativa linha inferior no mobile */
+            }
+
+            .btn-header {
+                width: 100%;
+                max-width: 280px;
+                margin: 15px auto 0 auto !important;
+                display: block !important;
+                text-align: center;
+                padding: 14px 0 !important;
+                box-sizing: border-box;
             }
 
             .mobile-menu-btn {
                 display: block;
             }
 
+            /* Animação do Botão Hambúrguer para X */
+            .mobile-menu-btn span {
+                display: block;
+                width: 25px;
+                height: 2px;
+                background-color: var(--color-primary);
+                margin: 6px 0;
+                transition: var(--transition-smooth);
+                border-radius: 2px;
+            }
+
+            .mobile-menu-btn.active span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .mobile-menu-btn.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-menu-btn.active span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            /* Seções e Tipografia no Mobile */
             .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .hero h1 {
                 font-size: 2.2rem;
             }
 
@@ -1416,11 +1512,16 @@
             }
 
             .options-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Ajusta card do combo da triagem para ocupar largura inteira de 1 coluna no mobile */
+            .options-grid .option-card[style*="grid-column: span 2"] {
+                grid-column: span 1 !important;
             }
 
             .triagem-wrapper {
-                padding: 25px;
+                padding: 20px 15px;
             }
 
             .footer-bottom {
@@ -2074,6 +2175,24 @@
             } else {
                 header.classList.remove('scrolled');
             }
+        });
+
+        /* 1.1 Lógica do Menu Mobile */
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+        });
+
+        // Fechar o menu ao clicar em qualquer link (para rolar suavemente até a seção)
+        const navLinksItems = document.querySelectorAll('.nav-links a');
+        navLinksItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileToggle.classList.remove('active');
+            });
         });
 
         /* 2. Efeito de Scroll Reveal */
